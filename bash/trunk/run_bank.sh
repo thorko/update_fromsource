@@ -1,6 +1,6 @@
 #!/bin/bash
 cipher="TWOFISH"
-file=/opt/scripts/perl/get_bank_status.pl.pgp
+file=/opt/scripts/perl/trunk/get_bank_status.pl.pgp
 documents=/home/thorko/Documents/bank
 
 function decrypt_and_run () {
