@@ -1,0 +1,96 @@
+#!/bin/bash
+
+# config parameters
+CIPHER=AES256
+PW_FILE=/home/thorko/Documents/git/pw.list
+PW_TEMP=/tmp/.pw.temp
+gitdir=/home/thorko/Documents/git
+
+
+if [ -z $1 ]; then
+	echo "Usage: $0 {edit|list|get} [search pattern]"
+	exit 1
+fi
+
+_pattern=$2
+
+# check executables
+for i in gpg vi grep cat touch git;  do
+	which $i > /dev/null 2>&1
+	if [ $? -ne 0 ]; then
+		echo "$i executable not in $PATH"
+		exit 1
+	fi
+done
+
+# clean up
+function clean() {
+	rm -f $PW_TEMP
+}
+
+
+# decrypt the pw file
+function decrypt() {
+	if [ -e $PW_FILE ]; then
+		# run an update at first
+		cd $gitdir && git pull
+		while [ "x$ret" != "x0" ]; do
+			gpg --no-use-agent -o $PW_TEMP $PW_FILE
+			ret=$?
+		done
+	else
+		echo "$PW_FILE doesn't exist, attempting to create it"
+		touch $PW_TEMP
+	fi
+}
+
+function edit_pw_file() {
+	decrypt
+	vi $PW_TEMP
+	while [ "x$ret2" != "x0" ]; do
+		gpg --cipher-algo $CIPHER --no-use-agent -o $PW_FILE -c $PW_TEMP
+		ret2=$?
+	done
+	clean
+	# after updating the file do an commit
+	cd $gitdir && git commit -a -m "udpate" 
+  cd $gitdir && git push origin master
+}
+
+# list the entire file
+function list_pw_file() {
+	decrypt
+	cat $PW_TEMP
+	clean
+}
+
+# get specific pw
+function get_pw() {
+	decrypt
+	if [ "x$_pattern" = "x" ]; then
+		echo -n "look for: "
+		read _pattern
+	fi
+	# print first line which contains the format of file
+	head -n 1 $PW_TEMP
+	grep -Ev "^#" $PW_TEMP | grep -i "$_pattern"
+	clean
+}
+
+case "$1" in 
+	edit)
+		edit_pw_file
+		;;
+	list)
+		list_pw_file
+		;;
+	get)
+		get_pw
+		;;
+	*)
+		echo "Usage: $0 {edit|list|get}"
+		exit 1
+		;;
+esac
+
+exit 0

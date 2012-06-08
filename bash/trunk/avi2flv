@@ -1,0 +1,15 @@
+#!/bin/bash
+
+tempfile=`tempfile`
+
+dialog --title "Choose your input file" --fselect /home/thorko/Documents/work/zukunft/ 17 60 2> $tempfile
+input=$(cat $tempfile)
+
+dialog --title "Output file (full path)" --inputbox "Full path to your output file" 17 60 2> $tempfile
+output=$(cat $tempfile)
+
+dialog --title "Geometry of output file" --inputbox "The geometry of your output file width x height" 17 60 "480x360" 2> $tempfile
+geometry=$(cat $tempfile) 
+
+# convert
+ffmpeg -i $input -b 1024k -s $geometry -r 25 -acodec copy $output
