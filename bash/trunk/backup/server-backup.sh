@@ -1,7 +1,7 @@
 #!/bin/bash
 LOCK=/tmp/server-backup.lock
-SRC=/opt/scripts/backup/server.conf
-EXC=/opt/scripts/backup/server-exc.conf
+SRC=/opt/scripts/bash/trunk/backup/server.conf
+EXC=/opt/scripts/bash/trunk/backup/server-exc.conf
 DEST=/mnt/usb/server_backup
 LOG=/var/log/server-backup.log
 KEY=/root/.ssh/id_rsa

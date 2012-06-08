@@ -2,8 +2,8 @@
 
 # config variables
 KEEP=7				# keep backup in days
-SOURCES=/opt/scripts/backup/sources.conf		# list of directories to bakup
-EXCLUDES=/opt/scripts/backup/excludes.conf
+SOURCES=/opt/scripts/bash/trunk/backup/sources.conf		# list of directories to bakup
+EXCLUDES=/opt/scripts/bash/trunk/backup/excludes.conf
 USER=root			# remote user
 HOST=thorko.de			# remote host
 PORT=193			# remote port
