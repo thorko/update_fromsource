@@ -1,0 +1,64 @@
+#!/bin/bash
+
+apache_version=$1
+php_version=$2
+mod_sec_version=$3
+svn_version=$4
+
+if [ "x$apache_version" == "x" -o "x$php_version" == "x" -o "x$mod_sec_version" == "x" -o "x$svn_version" == "x" ]; then
+	echo "Usage: $0 <apache version> <php version> <modsecurity version> <svn_version>"
+	exit 1
+fi
+
+# compile apache
+cd /usr/local/src/httpd-$apache_version
+./configure --prefix=/usr/local/apache2/$apache_version --enable-mods-shared="headers authz_svn auth_basic authn_file alias dav_lock dav_fs dav dav_svn cache disk_cache mem_cache ssl cgi rewrite unique_id" --enable-auth-digest --enable-substitute --enable-info --enable-vhost-alias --enable-status --enable-autoindex --enable-log-forensic --with-unique-id --enable-so --enable-deflate --enable-dav
+make
+make install
+
+# compile php5
+cd /usr/local/src/php-$php_version
+./configure  --prefix=/usr/local/php5/$php_version --with-pear --enable-cli --with-mysql --with-mysql-sock --enable-calendar --with-pcre-regex --with-mysqli --with-mcrypt --with-recode --with-gd --with-zlib --with-imap --with-imap-ssl --with-kerberos --enable-bcmath --with-pdo-mysql --with-apxs2=/usr/local/apache2/$apache_version/bin/apxs --with-freetype-dir --enable-gd-native-ttf --with-gettext --enable-dom --enable-sockets --enable-mbstring --with-jpeg-dir=/usr/lib --with-png-dir
+make
+make install
+
+# compile subversion for mod_dav_svn
+cd /usr/local/src/subversion-$svn_version
+./configure --with-apxs=/usr/local/apache2/$apache_version/bin/apxs
+make
+make install
+
+# compile mod_security
+cd /usr/local/src/modsecurity-apache_$mod_sec_version
+./configure --with-apxs=/usr/local/apache2/$apache_version/bin/apxs
+make
+make install
+
+
+# copy modules
+cp /usr/local/src/subversion-$svn_version/subversion/mod_dav_svn/.libs/mod_dav_svn.so /usr/local/apache2/$apache_version/modules/
+cp /usr/local/src/subversion-$svn_version/subversion/mod_authz_svn/.libs/mod_authz_svn.so /usr/local/apache2/$apache_version/modules/
+
+# relink everything
+cd /usr/local/apache2/$apache_version
+mv conf conf.orig
+ln -s /etc/apache2 ./conf
+
+cd /usr/local/apache2
+rm -f current
+ln -s ./$apache_version current
+
+if [ ! -f /usr/local/apache2/$apache_version/modules/mod_security2.so ]; then
+	echo "NO mod_security.so installed"
+fi
+if [ ! -f /usr/local/apache2/$apache_version/modules/libphp5.so ]; then
+	echo "NO libphp5.so installed"
+fi
+if [ ! -f /usr/local/apache2/$apache_version/modules/mod_dav_svn.so ]; then
+	echo "NO mod_dav_svn.so installed"
+fi
+if [ ! -f /usr/local/apache2/$apache_version/modules/mod_authz_svn.so ]; then
+	echo "NO mod_authz_svn.so installed"
+fi
+
+apachectl -t

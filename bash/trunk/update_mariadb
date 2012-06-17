@@ -1,0 +1,32 @@
+#!/bin/bash
+
+mariadb_version=$1
+
+if [ "x$mariadb_version" == "x" ]; then
+	echo "Usage: $0 <mariadb version>"
+	exit 1
+fi
+
+if [ ! -f /usr/local/src/mariadb-$mariadb_version.tar.gz ]; then
+	echo "Source mariadb-$mariadb_version.tar.gz does not exist."
+	exit 1
+fi
+
+cd /usr/local/src && tar -xvzf mariadb-$mariadb_version.tar.gz
+cd /usr/local/src/mariadb-$mariadb_version
+./configure --prefix=/usr/local/mariadb/$mariadb_version --with-mysqld-user=mysql --with-mysqlmanager --enable-profiling --with-plugins=myisam,archive,blackhole,csv,ibmdb2i,innodb_plugin,aria,myisammrg,xtradb,federated,partition,pbxt
+make
+make install
+
+# make a backup of mysql databases
+echo -en "Will make a backup of you database\nEnter your root mysql password: "
+read pw
+mysqldump -u root --password=$pw --all-databases > /var/tmp/mysql-backup-$(date +'%Y-%m-%d-%H-%M').sql
+
+# relink
+/etc/init.d/mysql stop
+rm /usr/local/mariadb/current && ln -s /usr/local/mariadb/$mariadb_version /usr/local/mariadb/current
+/etc/init.d/mysql start
+
+echo -e "Your backup is /var/tmp/mysql-backup-$(date +'%Y-%m-%d-%H-%M').sql\n"
+
