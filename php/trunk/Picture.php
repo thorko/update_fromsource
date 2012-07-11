@@ -1,5 +1,5 @@
 <?php
-class Pictures {
+class Picture {
 
 	public function createThumbs( $pathToImages, $pathToThumbs, $thumbWidth ) {
 	  // open the directory
