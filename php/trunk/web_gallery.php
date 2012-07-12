@@ -46,7 +46,7 @@ $thumb = new Picture();
 
 for($i = 0; $i < sizeof($thumbs); $i++) {
 	if ( ! file_exists("$path/$thumbs[$i]") ){
-		$thumb->createThumbs("$path_big/", "$path/", 150);
+		$thumb->createThumb("$path_big/$thumbs[$i]", "$path/$thumbs[$i]", 150);
 	}
 	echo "<a href=\"$path_big/$thumbs[$i]\" class=\"highslide\" onclick=\"return hs.expand(this)\"><img src=\"$path/$thumbs[$i]\" alt=\"Highslide JS\" title=\"Click to enlarge\" /></a>\n";
 

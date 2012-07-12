@@ -1,21 +1,16 @@
 <?php
 class Picture {
 
-	public function createThumbs( $pathToImages, $pathToThumbs, $thumbWidth ) {
-	  // open the directory
-	  $dir = opendir( $pathToImages );
-	
-	  // loop through it, looking for any/all JPG files:
-	  while (false !== ($fname = readdir( $dir ))) {
+	public function createThumb( $picture, $thumb, $thumbWidth ) {
 	    // parse path for the extension
-	    $info = pathinfo($pathToImages . $fname);
+	    $info = pathinfo($picture);
 	    // continue only if this is a JPEG image
-	    if ( strtolower($info['extension']) == 'jpg' )
+	    if ( strtolower($info['extension']) == 'jpg' || strtolower($info['extension']) == 'JPG' )
 	    {
 	      //echo "Creating thumbnail for {$fname} <br />";
 	
 	      // load image and get image size
-	      $img = imagecreatefromjpeg( "{$pathToImages}{$fname}" );
+	      $img = imagecreatefromjpeg( "{$picture}" );
 	      $width = imagesx( $img );
 	      $height = imagesy( $img );
 	
@@ -30,11 +25,8 @@ class Picture {
 	      imagecopyresized( $tmp_img, $img, 0, 0, 0, 0, $new_width, $new_height, $width, $height );
 	
 	      // save thumbnail into a file
-	      imagejpeg( $tmp_img, "$pathToThumbs$fname" );
+	      imagejpeg( $tmp_img, "$thumb" );
 	    }
-	  }
-	  // close the directory
-	  closedir( $dir );
 	}
 }
 ?>
