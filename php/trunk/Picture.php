@@ -28,5 +28,11 @@ class Picture {
 	      imagejpeg( $tmp_img, "$thumb" );
 	    }
 	}
+
+	public function getComment( $picture ) {
+		$comment = exif_read_data($picutre, 'COMMENT');
+		// return only first comment for now
+		return	$comment['COMMENT'][0];
+	}
 }
 ?>
