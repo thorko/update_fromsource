@@ -30,7 +30,7 @@ class Picture {
 	}
 
 	public function getComment( $picture ) {
-		$comment = exif_read_data($picutre, 'COMMENT');
+		$comment = exif_read_data($picture, 'COMMENT');
 		// return only first comment for now
 		return	$comment['COMMENT'][0];
 	}

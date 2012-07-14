@@ -1,6 +1,6 @@
 <?php
 require("Picture.php");
-$path_tumb = "vancouver/thumbs";
+$path_thumb = "vancouver/thumbs";
 $path_pics = "vancouver";
 $pics = array();
 
@@ -48,7 +48,7 @@ for($i = 0; $i < sizeof($pics); $i++) {
 	if ( ! file_exists("$path_thumb/$pics[$i]") ){
 		$thumb->createThumb("$path_pics/$pics[$i]", "$path_thumb/$pics[$i]", 150);
 	}
-	echo "<a href=\"$path_pics/$thumbs[$i]\" class=\"highslide\" onclick=\"return hs.expand(this, { captionEval: 'this.thumb.alt' })\"><img src=\"$path_thumb/$pics[$i]\" alt=\"".$thumb->getComment($path_pics/$pics[$i])."\" title=\"Click to enlarge\" /></a>\n";
+	echo "<a href=\"$path_pics/$pics[$i]\" class=\"highslide\" onclick=\"return hs.expand(this, { captionEval: 'this.thumb.alt' })\"><img src=\"$path_thumb/$pics[$i]\" alt=\"".$thumb->getComment($path_pics."/".$pics[$i])."\" title=\"Click to enlarge\" /></a>\n";
 
 }
 
