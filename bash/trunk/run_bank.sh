@@ -1,5 +1,5 @@
 #!/bin/bash
-cipher="TWOFISH"
+cipher="AES256"
 file=/opt/scripts/perl/trunk/get_bank_status.pl.pgp
 documents=/home/thorko/Documents/bank
 
