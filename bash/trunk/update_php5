@@ -20,7 +20,7 @@ cd /usr/local/src/php-$php_version
 vim -c '%s/^\(.*test.*recode_conflict.*\)/#\1/gc' -c 'wq!' configure
 vim -c '%s/^\(.*test.*recode_conflict.*\)/dnl \1/gc' -c 'wq!' ext/recode/config9.m4
  
-./configure  --prefix=/usr/local/php5/$php_version --with-pear --enable-cli --with-mysql --with-mysql-sock --enable-calendar --with-pcre-regex --with-mysqli --with-mcrypt --with-recode --with-gd --with-zlib --with-imap --with-imap-ssl --with-kerberos --enable-bcmath --with-pdo-mysql --with-apxs2=/usr/local/apache2/$apache_version/bin/apxs --with-freetype-dir --enable-gd-native-ttf --with-gettext --enable-dom --enable-sockets --enable-mbstring --with-jpeg-dir=/usr/lib --with-png-dir --enable-zip
+./configure  --prefix=/usr/local/php5/$php_version --with-pear --enable-cli --with-mysql --with-mysql-sock --enable-calendar --with-pcre-regex --with-mysqli --with-mcrypt --with-recode --with-gd --with-zlib --with-imap --with-imap-ssl --with-kerberos --enable-bcmath --with-pdo-mysql --with-apxs2=/usr/local/apache2/$apache_version/bin/apxs --with-freetype-dir --enable-gd-native-ttf --with-gettext --enable-dom --enable-sockets --enable-mbstring --with-jpeg-dir=/usr/lib --with-png-dir --enable-zip --with-curl --enable-json
 make
 make install
 
