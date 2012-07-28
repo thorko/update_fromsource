@@ -34,5 +34,10 @@ if [ ! -f /usr/local/php5/current/lib/php.ini ]; then
 	echo "NO php.ini linked to current"
 fi
 apachectl -t
+if [ $? = 0 ]; then
+	/etc/init.d/apache2 stop
+	sleep 2
+	/etc/init.d/apache2 start
+fi
 # needed for sms sending
 /usr/local/bin/pear install Log
