@@ -12,7 +12,7 @@ fi
 
 # compile apache
 cd /usr/local/src/httpd-$apache_version
-./configure --prefix=/usr/local/apache2/$apache_version --enable-mods-shared="headers authz_svn auth_basic authn_file alias dav_lock dav_fs dav dav_svn cache disk_cache mem_cache ssl cgi rewrite unique_id" --enable-auth-digest --enable-substitute --enable-info --enable-vhost-alias --enable-status --enable-autoindex --enable-log-forensic --with-unique-id --enable-so --enable-deflate --enable-dav
+./configure --prefix=/usr/local/apache2/$apache_version --enable-mods-shared="headers authz_svn auth_basic authn_file alias dav_lock dav_fs dav dav_svn cache disk_cache mem_cache ssl cgi rewrite unique_id" --enable-auth-digest --enable-substitute --enable-info --enable-vhost-alias --enable-status --enable-autoindex --enable-log-forensic --with-unique-id --enable-so --enable-deflate --enable-dav --enable-unixd
 make
 make install
 
