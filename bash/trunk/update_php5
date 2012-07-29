@@ -14,7 +14,7 @@ fi
 #fi
 cd /usr/local/src
 #tar -xjvf /usr/local/src/php-$php_version.tar.bz2
-# compile php5
+# compile php5 
 cd /usr/local/src/php-$php_version
 # patch php5 to work with recode and imap
 vim -c '%s/^\(.*test.*recode_conflict.*\)/#\1/gc' -c 'wq!' configure
