@@ -41,5 +41,8 @@ rm -f /usr/local/zabbix/current && ln -s $destdir /usr/local/zabbix/current
 sleep 3
 /etc/init.d/zabbix-agent start
 
+# change ownership of frontend
+chown -R zabbix: /usr/local/zabbix/current/frontends
+
 # clean up
 rm -rf /usr/local/src/zabbix/zabbix-$version
