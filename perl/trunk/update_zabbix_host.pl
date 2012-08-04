@@ -39,6 +39,7 @@ GetOptions(
 	"T|template=s" => \$template,
 	"I|initial_template=s" => \$initial_template,
 	"G|group=s" => \$group,
+	"u|url=s" => \$api_url,
 	"h|help" => \$help,
 	"d|debug" => \$debug
 );
