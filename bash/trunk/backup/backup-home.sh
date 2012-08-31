@@ -18,7 +18,7 @@ LOGIN="ssh -i $KEY -p $PORT $USER@$HOST"
 
 # locking
 if [ -e $LOCK ]; then
-	echo "Another instance running. Exit" >> $LOG 2>&1
+	echo "$(date) Another instance running. Exit" >> $LOG 2>&1
 	exit 0
 fi
 touch $LOCK
@@ -26,7 +26,7 @@ touch $LOCK
 # check if remote host is reachable
 ping -c 1 $HOST > /dev/null 2>&1
 if [ $? -ne 0 ]; then
-	echo "no network connectivity" >> $LOG 2>&1
+	echo "$(date) no network connectivity" >> $LOG 2>&1
 	exit 1
 fi
 
