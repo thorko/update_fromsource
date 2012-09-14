@@ -24,11 +24,12 @@ fi
 touch $LOCK
 
 # check if remote host is reachable
-ping -c 1 $HOST > /dev/null 2>&1
-if [ $? -ne 0 ]; then
-	echo "$(date) no network connectivity" >> $LOG 2>&1
-	exit 1
-fi
+#ping -c 1 $HOST > /dev/null 2>&1
+#if [ $? -ne 0 ]; then
+#	echo "$(date) no network connectivity" >> $LOG 2>&1
+#	rm -f $LOCK
+#	exit 1
+#fi
 
 # rotate directories on remote system
 echo "if [ ! -d ${DEST}/backup.${TODAY} ]; then
