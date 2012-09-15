@@ -11,6 +11,7 @@ use Fcntl qw(:flock);
 
 my $help = 0;
 my $debug = 0;
+my $verbose = 0;
 my %cfg;
 my $config = "";
 my $date = strftime("%Y%m%d", localtime);
@@ -18,6 +19,7 @@ my $date = strftime("%Y%m%d", localtime);
 Getopt::Long::Configure('bundling');
 GetOptions(
 	"c|config=s" => \$config,
+	"v|verbose" => \$verbose,
 	"d|debug" => \$debug,
 	"h|help" => \$help,
 );
@@ -27,16 +29,34 @@ if ( $help || $config eq "" ) {
 	exit 0;
 }
 
+
 Config::Simple->import_from($config, \%cfg);
 
-my $log_conf = "
-	log4perl.rootLogger=$cfg{'log.loglevel'}, Logfile
+$cfg{'log.loglevel'} = "DEBUG" if ($debug);
+my $log_conf;
+if ( $verbose ) {
+$log_conf = "
+	log4perl.rootLogger=$cfg{'log.loglevel'}, screen, Logfile
+	log4perl.appender.screen = Log::Log4perl::Appender::Screen
+	log4perl.appender.screen.stderr = 0
+	log4perl.appender.screen.layout = PatternLayout
+	log4perl.appender.screen.layout.ConversionPattern = %d %p> %F{1}:%L %M - %m%n
+
 	log4perl.appender.Logfile=Log::Log4perl::Appender::File
   	log4perl.appender.Logfile.filename=$cfg{'log.logfile'}
 	log4perl.appender.Logfile.mode=append
 	log4perl.appender.Logfile.layout=PatternLayout
 	log4perl.appender.Logfile.layout.ConversionPattern=%d %-5p %c - %m%n
 ";
+} else {
+	$log_conf = "log4perl.rootLogger=$cfg{'log.loglevel'}, Logfile
+	log4perl.appender.Logfile=Log::Log4perl::Appender::File
+  	log4perl.appender.Logfile.filename=$cfg{'log.logfile'}
+	log4perl.appender.Logfile.mode=append
+	log4perl.appender.Logfile.layout=PatternLayout
+	log4perl.appender.Logfile.layout.ConversionPattern=%d %-5p %c - %m%n
+";
+}
 
 Log::Log4perl->init(\$log_conf);
 our $log = Log::Log4perl->get_logger();
@@ -83,7 +103,7 @@ if ( $code ) {
 $log->debug("closing ssh connection");
 $ssh->cmd("exit");
 
-$log->debug("running rsync...");
+$log->info("running rsync...");
 system("/usr/bin/rsync -LpDtgHrz -e \"ssh -i $cfg{'backup_settings.key'} \\
 -p $cfg{'backup_settings.port'}\" --log-file=$cfg{'log.logfile'} \\
 --delete --exclude-from=$cfg{'backup_settings.exclude_file'} \\
@@ -100,9 +120,10 @@ sub check_file {
 
 sub help_msg {
 	print <<'MSG';
-backupctl.pl -c <config file> [-d] [-h]
+backupctl.pl -c <config file> [-v] [-d] [-h]
 
 -c, --config	config file to use
+-v, --verbose	be verbose
 -d, --debug	debugging enabled
 -h, --help	this help message
 
