@@ -83,7 +83,7 @@ if ( $code ) {
 $log->debug("closing ssh connection");
 $ssh->cmd("exit");
 
-$log->debug("running rsync...");
+$log->info("running rsync...");
 system("/usr/bin/rsync -LpDtgHrz -e \"ssh -i $cfg{'backup_settings.key'} \\
 -p $cfg{'backup_settings.port'}\" --log-file=$cfg{'log.logfile'} \\
 --delete --exclude-from=$cfg{'backup_settings.exclude_file'} \\
