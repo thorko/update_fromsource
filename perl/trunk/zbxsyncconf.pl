@@ -5,15 +5,11 @@ use warnings;
 
 use Getopt::Long;
 use Log::Log4perl qw(:easy);
-use Denic::Log4perl::Conf;
-
-
 
 my $debug = 0;
 my $help = 0;
 
-#my $tables="actions applications autoreg_host conditions config dchecks dhosts drules dservices escalations expressions functions globalmacro globalvars graph_discovery graph_theme graphs graphs_items groups help_items hostmacro hosts hosts_groups hosts_templates housekeeper httpstep httpstepitem httptest httptestitem icon_map icon_mapping ids images interface item_discovery items items_applications maintenances maintenances_groups maintenances_hosts maintenances_windows mappings media media_type node_cksum nodes opcommand opcommand_grp opcommand_hst opconditions operations opgroup opmessage opmessage_grp opmessage_usr optemplate profiles proxy_autoreg_host proxy_dhistory proxy_history regexps rights screens screens_items scripts service_alarms services services_links services_times slides slideshows sysmap_element_url sysmap_url sysmaps sysmaps_elements sysmaps_link_triggers sysmaps_links timeperiods trigger_depends trigger_discovery triggers user_history users users_groups usrgrp valuemaps";
-my $tables="actions applications autoreg_host conditions config dchecks dhosts drules dservices escalations expressions functions globalmacro globalvars graph_discovery graph_theme graphs graphs_items groups help_items hostmacro hosts hosts_groups hosts_templates housekeeper httpstep httpstepitem httptest httptestitem icon_map icon_mapping ids images interface item_discovery items items_applications maintenances maintenances_groups maintenances_hosts maintenances_windows mappings media media_type node_cksum nodes opcommand opcommand_grp opcommand_hst opconditions operations opgroup opmessage opmessage_grp opmessage_usr optemplate profiles proxy_autoreg_host proxy_dhistory proxy_history regexps rights screens screens_items scripts service_alarms services services_links services_times slides slideshows sysmap_element_url sysmap_url sysmaps sysmaps_elements sysmaps_link_triggers sysmaps_links timeperiods trigger_depends trigger_discovery triggers user_history users users_groups usrgrp valuemaps sessions";
+my $tables="actions applications autoreg_host conditions config dchecks dhosts drules dservices escalations expressions functions globalmacro globalvars graph_discovery graph_theme graphs graphs_items groups help_items hostmacro hosts hosts_groups host_inventory hosts_templates housekeeper httpstep httpstepitem httptest httptestitem icon_map icon_mapping ids images interface item_discovery items items_applications maintenances maintenances_groups maintenances_hosts maintenances_windows mappings media media_type node_cksum nodes opcommand opcommand_grp opcommand_hst opconditions operations opgroup opmessage opmessage_grp opmessage_usr optemplate profiles proxy_autoreg_host proxy_dhistory proxy_history regexps rights screens screens_items scripts service_alarms services services_links services_times slides slideshows sysmap_element_url sysmap_url sysmaps sysmaps_elements sysmaps_link_triggers sysmaps_links timeperiods trigger_depends trigger_discovery triggers user_history users users_groups usrgrp valuemaps";
 my $tables_list = "";
 my $user="postgres";
 my $schema="public";
