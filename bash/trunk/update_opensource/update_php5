@@ -1,0 +1,51 @@
+#!/bin/bash
+
+php_version=$1
+apache_version=$2
+
+if [ "x$php_version" == "x" -o "x$apache_version" == "x" ]; then
+	echo "Usage: $0 <php version> <apache version>"
+	exit 1
+fi
+
+if [ ! -f /usr/local/src/php-$php_version.tar.bz2 ]; then
+	echo "Source php-$php_version.tar.bz2 does not exist"
+	exit 1
+fi
+cd /usr/local/src
+tar -xjvf /usr/local/src/php-$php_version.tar.bz2
+# compile php5
+cd /usr/local/src/php-$php_version
+# patch php5 to work with recode and imap
+vim -c '%s/^\(.*test.*recode_conflict.*\)/#\1/gc' -c 'wq!' configure
+vim -c '%s/^\(.*test.*recode_conflict.*\)/dnl \1/gc' -c 'wq!' ext/recode/config9.m4
+ 
+./configure  --prefix=/usr/local/php5/$php_version --with-pear --enable-cli --with-mysql --with-mysql-sock --enable-calendar --with-pcre-regex --with-mysqli --with-mcrypt --with-recode --with-gd --with-zlib --with-imap --with-imap-ssl --with-kerberos --enable-bcmath --with-pdo-mysql --with-apxs2=/usr/local/apache2/$apache_version/bin/apxs --with-freetype-dir --enable-gd-native-ttf --with-gettext --enable-dom --enable-sockets --enable-mbstring --with-jpeg-dir=/usr/lib --with-png-dir --enable-zip --with-curl --enable-json --enable-exif
+make
+if [ $? -eq 1 ]; then
+	echo "ERROR make failed..."
+	exit 1
+fi
+make install
+if [ $? -eq 1 ]; then
+	echo "ERROR make failed..."
+	exit 1
+fi
+
+# relink everything
+cd /usr/local/php5/$php_version/lib
+ln -s /etc/php5/apache2/php.ini ./
+cd /usr/local/php5
+rm -f current && ln -s ./$php_version ./current
+
+if [ ! -f /usr/local/php5/current/lib/php.ini ]; then
+	echo "NO php.ini linked to current"
+fi
+apachectl -t
+if [ $? -eq 0 ]; then
+	/etc/init.d/apache2 stop
+	sleep 2
+	/etc/init.d/apache2 start
+fi
+# needed for sms sending
+/usr/local/bin/pear install Log
