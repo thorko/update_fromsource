@@ -8,7 +8,7 @@ $log_level = PEAR_LOG_INFO;
 $logconf = array('mode' => 0775, 'timeFormat' => '%X %x');
 $logger = &Log::singleton('file', '/var/log/sms.log', 'ident', $logconf, $log_level);
 
-$cfg_array = parse_ini_file("/etc/zabbix/alert.d/smsclickatell.ini");
+$cfg_array = parse_ini_file("/etc/zabbix/alert.d/smstrade.ini");
 
 // Do not change anything beneath this line:
  
