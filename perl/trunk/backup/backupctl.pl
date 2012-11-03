@@ -92,8 +92,11 @@ my ($out, $err, $code) = $ssh->cmd("
 	if [ ! -d $cfg{'backup_settings.destination_folder'}/backup.$date ]; then
 		/bin/cp -Rpl $cfg{'backup_settings.destination_folder'}/\$(ls -1 $cfg{'backup_settings.destination_folder'} | tail -1) $cfg{'backup_settings.destination_folder'}/backup.$date
 	fi
-	if [ \$(ls -1 $cfg{'backup_settings.destination_folder'} | wc -l) -gt $cfg{'backup_settings.keep_days'} ]; then
-		ls -1 -r --color=never $cfg{'backup_settings.destination_folder'}/ | tail -n 1 | xargs rm -rf
+	folders=\$(find $cfg{'backup_settings.destination_folder'} -maxdepth 1 -type d -name \"backup*\" | wc -l)
+	if [ \$folders -gt $cfg{'backup_settings.keep_days'} ]; then
+		diff=\$((\$folders - $cfg{'backup_settings.keep_days'}))
+		echo \"will remove \$diff directories\"
+		find $cfg{'backup_settings.destination_folder'} -maxdepth 1 -type d -name \"backup*\" | sort -r | tail -n \$diff | xargs rm -rf
 	fi
 ");
 if ( $code ) {
