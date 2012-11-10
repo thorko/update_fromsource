@@ -13,12 +13,10 @@ function decrypt_and_run () {
 
 function show () {
 	# get latest document
-	cd $documents
-	file=$(ls -tr | tail -n 1)
-	filename=$(echo ${file%.*})
-	gpg --no-use-agent -d -o $filename $file
-
-	firefox $filename
+	fn="${file%.*}"
+        gpg -d --no-use-agent -o $fn $file
+        perl $fn -s
+	rm -f $fn
 }
 
 function clean () {
