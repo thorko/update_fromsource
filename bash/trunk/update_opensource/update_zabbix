@@ -21,7 +21,7 @@ fi
 cd $builddir
 tar -xzvf zabbix-$version.tar.gz
 cd zabbix-$version
-export PATH=$PATH:/usr/local/java/jdk1.7.0_05/bin/
+export PATH=$PATH:/usr/local/java/current/bin/
 ./configure --prefix=$destdir --enable-agent --enable-server --with-libcurl --with-net-snmp --with-ssh2 --with-mysql --enable-proxy --enable-java
 make
 if [ $? -eq 1 ]; then
