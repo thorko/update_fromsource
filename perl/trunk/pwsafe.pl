@@ -6,14 +6,16 @@ use Getopt::Long;
 use Config::Simple;
 use Clipboard;
 use GnuPG qw( :algo );
+use Term::ReadKey;
 
 my $help = 0;
 my $debug = 0;
-my $config = "~/.pwsafe.conf";
+my $config = "/home/thorko/.pwsafe.conf";
 my $cfg_handle;
 my %cfg;
 my $toclip = 0;
 my $command;
+my $passphrase;
 
 Getopt::Long::Configure('bundling');
 GetOptions(
@@ -34,19 +36,26 @@ if ( ! -f $config ) {
 	exit 1;
 }
 
-init_logger();
-
 # get config
 $cfg_handle = new Config::Simple($config);
 Config::Simple->import_from($config, \%cfg);
-$cfg{'file.pwfile'};
-$cfg{'file.cipher'};
+#$cfg{'file.pwfile'};
+#$cfg{'file.cipher'};
 
-my $gpg = new GnuPG(options => "--cipher-algo ".$cfg{'file.cipher'}." --no-use-agent");
+my $gpg = new GnuPG();
 
+#$gpg->encrypt(plaintext => "/tmp/.pwsafe", output => $cfg{'file.pwfile'} );
 
+ReadMode('noecho');
+print "Enter your Passphrase: ";
+chomp($passphrase = ReadLine(0));
 
-Clipboard->copy("test");
+# decrypt
+eval {
+	$gpg->decrypt( ciphertext => $cfg{'file.pwfile'}, output => "/tmp/.test.pw", passphrase => $passphrase, symmetric => "true");};
+ReadMode('restore');
+
+#Clipboard->copy("test");
 
 sub help_msg{
 	print <<'MSG';
