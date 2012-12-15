@@ -1,7 +1,6 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use Log::Log4perl qw(:easy);
 use Getopt::Long;
 use Config::Simple;
 use Clipboard;
@@ -20,18 +19,12 @@ my $toclip = 0;
 my $command;
 my %stats;
 
-# stats{sitename}, stats{sitelink}, 
-# stats{smtp_server}, stats{pop3_server}, stats{imap_server} 
-# stats{username}, stats{password}
-# stats{sitetype}
-
+our $tmp_pass = "/tmp/.passwd.db";
 our $gpg = new GnuPG();
-
 
 Getopt::Long::Configure('bundling');
 GetOptions(
 	"c|config=s" => \$config,
-	"d|debug" => \$debug,
 	"t|toclip" => \$toclip,
 	"o|option=s" => \$command,
 	"h|help" => \$help,
@@ -50,11 +43,7 @@ if ( ! -f $config ) {
 ########
 # subs #
 ########
-sub get {
-	my $password;
-	my $tmp_pass = "/tmp/.passwd.db";
-	print "Your regex pattern you look for: ";
-	chomp(my $pattern = ReadLine(0));
+sub decrypt {
 	ReadMode('noecho');
 	print "Enter your Passphrase: ";
 	chomp(my $passphrase = ReadLine(0));
@@ -65,11 +54,18 @@ sub get {
 	};
 	ReadMode('restore');
 	print "\n";
+}
+
+sub get {
+	my $password;
+	print "Your regex pattern you look for: ";
+	chomp(my $pattern = ReadLine(0));
+	decrypt();
 	my @match = fgrep { /$pattern/ } $tmp_pass;
 	foreach (@match) {
 		foreach my $i (keys $_->{'matches'}) {
-			$username = (split(/[\t]+/, $_->{'matches'}{$i}))[2];
-			$password = (split(/[\t]+/, $_->{'matches'}{$i}))[3];
+			my $username = (split(/[\t]+/, $_->{'matches'}{$i}))[2];
+			my $password = (split(/[\t]+/, $_->{'matches'}{$i}))[3];
 			if ( !$cfg{'toclip'} ) {
 				print "Username: $username, Password: $password\n";
 			} else {
@@ -78,6 +74,22 @@ sub get {
 			}
 		}
 	}
+	unlink($tmp_pass);
+}
+
+sub add {
+	print "Sitename: ";
+	my $sitename = ReadLine(0);
+	print "Sitelink: ";
+	my $sitelink = ReadLine(0);
+	print "Username: ";
+	my $username = ReadLine(0);
+	print "Password: ";
+	my $password = ReadLine(0);
+	print "Sitetype: ";
+	my $sitetype = ReadLine(0);
+	decrypt();
+	system('echo -e "$sitename\t$sitelink\t$username\t$password\t$sitetype" >> $tmp_pass');
 	unlink($tmp_pass);
 }
 
@@ -97,7 +109,7 @@ $cfg{'debug'} = 1 if ( $debug );
 
 switch($command) {
 	case "get"	{ get(); }
-	case "add"	{ print 1; }
+	case "add"	{ add(); }
 	case "edit"	{ print 1; }
 	case "delete"	{ print 1; }
 }
@@ -112,7 +124,6 @@ pwsafe.pl [-c <config>] -o <option> [-d] [-h] [-t]
 -o, --option	option can be "edit", "get", "add", "delete"
 		list will list all passwords
 -t, --toclip	will paste the password to clipboard
--d, --debug	debugging enabled
 -h, --help	this help message
 
 pwsafe is a password manager. It stores the passwords in an encrypted file.
