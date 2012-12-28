@@ -1,0 +1,12 @@
+#!/bin/bash
+tomcat_version=$1
+
+if [ "x$tomcat_version" == "x" ]; then
+	echo "Usage: $0 <tomcat version> "
+	exit 1
+fi
+
+cd /usr/local/src/
+wget http://mirror.lwnetwork.org.uk/APACHE/tomcat/tomcat-7/v$tomcat_version/bin/apache-tomcat-$tomcat_version.tar.gz 
+tar -xzvf apache-tomcat-$tomcat_version.tar.gz
+
