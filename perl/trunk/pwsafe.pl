@@ -56,41 +56,91 @@ sub decrypt {
 	print "\n";
 }
 
+sub encrypt {
+	my ($passphrase, $passphrase2);
+	ReadMode('noecho');
+	do {
+		print "\nEnter your Passphrase to encrypt new file: ";
+		chomp($passphrase = ReadLine(0));
+		print "\nRepeat Passphrase: ";
+		chomp($passphrase2 = ReadLine(0));
+	} until ($passphrase eq $passphrase2);
+
+	$gpg->encrypt(plaintext => $tmp_pass, output => $cfg{'file.pwfile'}, symmetric => "true", passphrase => $passphrase);
+	ReadMode('restore');
+	print "\n";
+	unlink($tmp_pass);
+}
+
 sub get {
 	my $password;
 	print "Your regex pattern you look for: ";
 	chomp(my $pattern = ReadLine(0));
 	decrypt();
 	my @match = fgrep { /$pattern/ } $tmp_pass;
+	print "-" x 30 ."\n";
 	foreach (@match) {
 		foreach my $i (keys $_->{'matches'}) {
-			my $username = (split(/[\t]+/, $_->{'matches'}{$i}))[2];
-			my $password = (split(/[\t]+/, $_->{'matches'}{$i}))[3];
+			my $name     = (split(/;/, $_->{'matches'}{$i}))[0];
+			my $username = (split(/;/, $_->{'matches'}{$i}))[1];
+			my $password = (split(/;/, $_->{'matches'}{$i}))[2];
+			my $notes = (split(/;/, $_->{'matches'}{$i}))[4];
 			if ( !$cfg{'toclip'} ) {
-				print "Username: $username, Password: $password\n";
+				print "Name: $name\nUsername: $username\nPassword: $password\n$notes\n";
 			} else {
-				print "Username: $username\n";
+				print "Name: $name\nUsername: $username\n$notes\n";
 				Clipboard->copy($password) if ($cfg{'toclip'});
 			}
+			print "-" x 30 ."\n";
 		}
 	}
 	unlink($tmp_pass);
 }
 
 sub add {
-	print "Sitename: ";
-	my $sitename = ReadLine(0);
-	print "Sitelink: ";
-	my $sitelink = ReadLine(0);
+	print "Name: ";
+	chomp(my $sitename = ReadLine(0));
+	print "Notes: ";
+	chomp(my $sitelink = ReadLine(0));
 	print "Username: ";
-	my $username = ReadLine(0);
+	chomp(my $username = ReadLine(0));
 	print "Password: ";
-	my $password = ReadLine(0);
+	ReadMode('noecho');
+	chomp(my $password = ReadLine(0));
+	ReadMode('restore');
+	print "\n";
 	print "Sitetype: ";
-	my $sitetype = ReadLine(0);
+	chomp(my $sitetype = ReadLine(0));
 	decrypt();
-	system('echo -e "$sitename\t$sitelink\t$username\t$password\t$sitetype" >> $tmp_pass');
-	unlink($tmp_pass);
+	open(FILE, ">>$tmp_pass") || die("Can't open file: $tmp_pass");
+	print FILE "$sitename;$username;$password;$sitetype;$sitelink;\n";
+	close(FILE);
+	encrypt();
+}
+
+sub edit {
+	return 0;
+	decrypt();
+	
+	encrypt();
+}
+
+sub delete_pw {
+	print "Your regex pattern you look for: ";
+	chomp(my $pattern = ReadLine(0));
+	decrypt();
+	my @match = fgrep { /$pattern/ } $tmp_pass;
+	foreach (@match) {
+		if(scalar keys $_->{'matches'} > 1) {
+			print "An unique entry could not be found for '$pattern'\n";
+			unlink($tmp_pass);
+			return 0;
+		} else {
+			system("sed -i '/$pattern/d' $tmp_pass");
+		}
+
+	}
+	encrypt();
 }
 
 
@@ -105,13 +155,12 @@ Config::Simple->import_from($config, \%cfg);
 $cfg{'toclip'} = 1 if ( $toclip );
 $cfg{'debug'} = 1 if ( $debug );
 
-#$gpg->encrypt(plaintext => "/tmp/.pwsafe", output => $cfg{'file.pwfile'} );
 
 switch($command) {
 	case "get"	{ get(); }
 	case "add"	{ add(); }
-	case "edit"	{ print 1; }
-	case "delete"	{ print 1; }
+	case "edit"	{ edit(); }
+	case "delete"	{ delete_pw(); }
 }
 
 
