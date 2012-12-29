@@ -4,7 +4,7 @@ use warnings;
 use Getopt::Long;
 use Config::Simple;
 use Clipboard;
-use GnuPG qw( :algo );
+#use GnuPG qw( :algo );
 use Term::ReadKey;
 use Switch;
 use File::Grep qw(fgrep);
@@ -20,7 +20,6 @@ my $command;
 my %stats;
 
 our $tmp_pass = "/tmp/.passwd.db";
-our $gpg = new GnuPG();
 
 Getopt::Long::Configure('bundling');
 GetOptions(
@@ -49,9 +48,7 @@ sub decrypt {
 	chomp(my $passphrase = ReadLine(0));
 	
 	# decrypt
-	eval {
-		$gpg->decrypt( ciphertext => $cfg{'file.pwfile'}, output => $tmp_pass, passphrase => $passphrase, symmetric => "true");
-	};
+	system("gpg -d --no-use-agent --passphrase $passphrase -o $tmp_pass $cfg{'file.pwfile'}");
 	ReadMode('restore');
 	print "\n";
 }
@@ -65,10 +62,9 @@ sub encrypt {
 		print "\nRepeat Passphrase: ";
 		chomp($passphrase2 = ReadLine(0));
 	} until ($passphrase eq $passphrase2);
-
-	$gpg->encrypt(plaintext => $tmp_pass, output => $cfg{'file.pwfile'}, symmetric => "true", passphrase => $passphrase);
 	ReadMode('restore');
 	print "\n";
+	system("gpg -c --cipher-algo $cfg{'file.cipher'} --no-use-agent --passphrase $passphrase -o $cfg{'file.pwfile'} $tmp_pass");
 	unlink($tmp_pass);
 }
 
@@ -119,9 +115,8 @@ sub add {
 }
 
 sub edit {
-	return 0;
 	decrypt();
-	
+	system("vim $tmp_pass");
 	encrypt();
 }
 
