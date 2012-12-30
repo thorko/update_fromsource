@@ -4,11 +4,11 @@ use warnings;
 use Getopt::Long;
 use Config::Simple;
 use Clipboard;
-#use GnuPG qw( :algo );
 use Term::ReadKey;
 use Switch;
 use File::Grep qw(fgrep);
-use Data::Dumper;
+use File::Basename;
+#use Data::Dumper;
 
 my $help = 0;
 my $debug = 0;
@@ -67,8 +67,9 @@ sub encrypt {
 	system("gpg -c --cipher-algo $cfg{'file.cipher'} --no-use-agent --passphrase $passphrase -o $cfg{'file.pwfile'} $tmp_pass");
 	unlink($tmp_pass);
 	if($cfg{'options.usegit'}) {
-		system("git commit -m 'update passwddb");
-		system("git push origin master");
+		my $dir = dirname($cfg{'file.pwfile'});
+		system("cd $dir && git commit -m 'update passwddb");
+		system("cd $dir && git push origin master");
 	}
 }
 
@@ -77,14 +78,11 @@ sub get {
 	print "Your regex pattern you look for: ";
 	chomp(my $pattern = ReadLine(0));
 	decrypt();
-	my @match = fgrep { /$pattern/ } $tmp_pass;
+	my @match = fgrep { /$pattern/i } $tmp_pass;
 	print "-" x 30 ."\n";
 	foreach (@match) {
 		foreach my $i (keys $_->{'matches'}) {
-			my $name     = (split(/;/, $_->{'matches'}{$i}))[0];
-			my $username = (split(/;/, $_->{'matches'}{$i}))[1];
-			my $password = (split(/;/, $_->{'matches'}{$i}))[2];
-			my $notes = (split(/;/, $_->{'matches'}{$i}))[4];
+			my ($name,$username,$password,$sitetype,$notes) = (split(/;/, $_->{'matches'}{$i}));
 			if ( !$cfg{'toclip'} ) {
 				print "Name: $name\nUsername: $username\nPassword: $password\n$notes\n";
 			} else {
@@ -128,7 +126,7 @@ sub delete_pw {
 	print "Your regex pattern you look for: ";
 	chomp(my $pattern = ReadLine(0));
 	decrypt();
-	my @match = fgrep { /$pattern/ } $tmp_pass;
+	my @match = fgrep { /$pattern/i } $tmp_pass;
 	foreach (@match) {
 		if(scalar keys $_->{'matches'} > 1) {
 			print "An unique entry could not be found for '$pattern'\n";
