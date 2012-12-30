@@ -68,7 +68,8 @@ sub encrypt {
 	unlink($tmp_pass);
 	if($cfg{'options.usegit'}) {
 		my $dir = dirname($cfg{'file.pwfile'});
-		system("cd $dir && git commit -m 'update passwddb");
+		my $filename = basename($cfg{'file.pwfile'});
+		system("cd $dir && git commit -m 'update passwddb' $filename");
 		system("cd $dir && git push origin master");
 	}
 }
