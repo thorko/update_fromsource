@@ -66,6 +66,10 @@ sub encrypt {
 	print "\n";
 	system("gpg -c --cipher-algo $cfg{'file.cipher'} --no-use-agent --passphrase $passphrase -o $cfg{'file.pwfile'} $tmp_pass");
 	unlink($tmp_pass);
+	if($cfg{'options.usegit'}) {
+		system("git commit -m 'update passwddb");
+		system("git push origin master");
+	}
 }
 
 sub get {
@@ -166,7 +170,6 @@ pwsafe.pl [-c <config>] -o <option> [-d] [-h] [-t]
 
 -c, --config	config file to use
 -o, --option	option can be "edit", "get", "add", "delete"
-		list will list all passwords
 -t, --toclip	will paste the password to clipboard
 -h, --help	this help message
 
