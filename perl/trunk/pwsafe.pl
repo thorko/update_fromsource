@@ -12,7 +12,7 @@ use File::Basename;
 
 my $help = 0;
 my $debug = 0;
-my $config = "/home/thorko/.pwsafe.conf";
+my $config = $ENV{"HOME"}."/.pwsafe.conf";
 my $cfg_handle;
 our %cfg;
 my $toclip = 0;
