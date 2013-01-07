@@ -12,7 +12,7 @@ use File::Basename;
 
 my $help = 0;
 my $debug = 0;
-my $config = "/home/thorko/.pwsafe.conf";
+my $config = $ENV{"HOME"}."/.pwsafe.conf";
 my $cfg_handle;
 our %cfg;
 my $toclip = 0;
@@ -150,8 +150,8 @@ sub delete_pw {
 $cfg_handle = new Config::Simple($config);
 Config::Simple->import_from($config, \%cfg);
 
-$cfg{'toclip'} = 1 if ( $toclip );
-$cfg{'debug'} = 1 if ( $debug );
+$cfg{'toclip'} = 1 if ( $toclip || $cfg{'options.toclip'} );
+$cfg{'debug'} = 1 if ( $debug || $cfg{'options.debug'} );
 
 
 switch($command) {
