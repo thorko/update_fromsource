@@ -1,3 +1,31 @@
 #!/bin/bash
 
+version=$1
 
+if [ "x$version" == "" ]; then
+  echo "Usage: $0 <version>"
+  echo "Example: $0 7u11"
+  exit 1
+fi
+
+# split version
+IFS="u"
+set -- $version
+majorv=$1
+shift
+minorv=$@
+
+# stop all
+/etc/init.d/tomcat stop
+/etc/init.d/benno-smtp stop
+/etc/init.d/red5-server stop
+
+cd /usr/local/java
+tar -xzvf /usr/local/src/jdk-$version-linux-x64.tar.gz
+rm -f current
+ln -s jdk-1.$majorv.0_$minorv current
+
+sleep 4
+/etc/init.d/tomcat start
+/etc/init.d/benno-smtp start
+/etc/init.d/red5-server start
