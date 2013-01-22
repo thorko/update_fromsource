@@ -15,7 +15,7 @@ my $debug = 0;
 my $config = $ENV{"HOME"}."/.pwsafe.conf";
 my $cfg_handle;
 our %cfg;
-my $toclip = 0;
+my $toclip;
 my $command;
 my %stats;
 
@@ -24,7 +24,7 @@ our $tmp_pass = "/tmp/.passwd.db";
 Getopt::Long::Configure('bundling');
 GetOptions(
 	"c|config=s" => \$config,
-	"t|toclip" => \$toclip,
+	"t|toclip=i" => \$toclip,
 	"o|option=s" => \$command,
 	"h|help" => \$help,
 );
@@ -150,7 +150,7 @@ sub delete_pw {
 $cfg_handle = new Config::Simple($config);
 Config::Simple->import_from($config, \%cfg);
 
-$cfg{'toclip'} = 1 if ( $toclip || $cfg{'options.toclip'} );
+$cfg{'toclip'} = defined($toclip) ? $toclip : $cfg{'options.toclip'};
 $cfg{'debug'} = 1 if ( $debug || $cfg{'options.debug'} );
 
 
@@ -165,11 +165,13 @@ switch($command) {
 sub help_msg{
 	print <<'MSG';
 
-pwsafe.pl [-c <config>] -o <option> [-d] [-h] [-t]
+pwsafe.pl [-c <config>] -o <option> [-d] [-h] [-t <0|1>]
 
 -c, --config	config file to use
 -o, --option	option can be "edit", "get", "add", "delete"
--t, --toclip	will paste the password to clipboard
+-t, --toclip	0 or 1 
+		0 will disable copy to clipboard
+		1 will enable copy to clipboard
 -h, --help	this help message
 
 pwsafe is a password manager. It stores the passwords in an encrypted file.
