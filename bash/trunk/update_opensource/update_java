@@ -2,7 +2,7 @@
 
 version=$1
 
-if [ "x$version" == "" ]; then
+if [ "x$version" == "x" ]; then
   echo "Usage: $0 <version>"
   echo "Example: $0 7u11"
   exit 1
@@ -21,10 +21,12 @@ minorv=$@
 /etc/init.d/red5-server stop
 
 cd /usr/local/java
-tar -xzvf /usr/local/src/jdk-$version-linux-x64.tar.gz
+tar -xzvf /usr/local/src/jdk-${majorv}u${minorv}-linux-x64.tar.gz
 rm -f current
-ln -s jdk-1.$majorv.0_$minorv current
+ln -s jdk1.$majorv.0_$minorv current
+chown -R root: jdk1.$majorv.0_$minorv
 
+export JAVA_HOME=/usr/local/java/current
 sleep 4
 /etc/init.d/tomcat start
 /etc/init.d/benno-smtp start

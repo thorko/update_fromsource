@@ -5,7 +5,7 @@ apache_version=$2
 mode=$3
 
 if [ "x$php_version" == "x" -o "x$apache_version" == "x" ]; then
-	echo "Usage: $0 <php version> <apache version>"
+	echo "Usage: $0 <php version> <apache version> <update|rollback>"
 	exit 1
 fi
 
