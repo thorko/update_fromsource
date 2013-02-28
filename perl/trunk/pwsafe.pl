@@ -18,6 +18,7 @@ our %cfg;
 my $toclip;
 my $command;
 my %stats;
+my $lookup;
 
 our $tmp_pass = "/tmp/.passwd.db";
 
@@ -26,6 +27,7 @@ GetOptions(
 	"c|config=s" => \$config,
 	"t|toclip=i" => \$toclip,
 	"o|option=s" => \$command,
+	"l|look=s"   => \$lookup,
 	"h|help" => \$help,
 );
 
@@ -75,9 +77,15 @@ sub encrypt {
 }
 
 sub get {
+	my ($lookup) = @_;
 	my $password;
-	print "Your regex pattern you look for: ";
-	chomp(my $pattern = ReadLine(0));
+        my $pattern;
+        if ( ! defined($lookup) ) {
+		print "Your regex pattern you look for: ";
+		chomp($pattern = ReadLine(0));
+	} else {
+		$pattern = $lookup;
+	}
 	decrypt();
 	my @match = fgrep { /$pattern/i } $tmp_pass;
 	print "-" x 30 ."\n";
@@ -155,7 +163,9 @@ $cfg{'debug'} = 1 if ( $debug || $cfg{'options.debug'} );
 
 
 switch($command) {
-	case "get"	{ get(); }
+	case "get"	{ 
+			  if ( $lookup ne "" ) { get($lookup);} else { get(); } 
+			}
 	case "add"	{ add(); }
 	case "edit"	{ edit(); }
 	case "delete"	{ delete_pw(); }
@@ -165,10 +175,11 @@ switch($command) {
 sub help_msg{
 	print <<'MSG';
 
-pwsafe.pl [-c <config>] -o <option> [-d] [-h] [-t <0|1>]
+pwsafe.pl [-c <config>] -o <option> [-l <lookup pattern>] [-d] [-h] [-t <0|1>]
 
 -c, --config	config file to use
--o, --option	option can be "edit", "get", "add", "delete"
+-o, --option	option can be "edit", "get", "add", "delete"a
+-l, --lookup	pattern to search in the password database
 -t, --toclip	0 or 1 
 		0 will disable copy to clipboard
 		1 will enable copy to clipboard
