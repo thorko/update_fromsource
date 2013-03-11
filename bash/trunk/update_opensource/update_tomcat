@@ -15,9 +15,10 @@ cp /usr/local/src/bennosearch/bennosearch.war /usr/local/tomcat/$tomcat_version/
 cd /usr/local/tomcat
 chown -R tomcat:tomcat $tomcat_version
 /etc/init.d/tomcat stop
+/usr/bin/pkill -9 -f tomcat
 rm current && ln -s $tomcat_version current
 /etc/init.d/tomcat start
-sleep 5
+sleep 10
 cp /usr/local/src/bennosearch/application*.xml /usr/local/tomcat/current/webapps/bennosearch/WEB-INF/
 cp /usr/local/src/bennosearch/server.xml /usr/local/tomcat/current/conf/
 /etc/init.d/tomcat stop
