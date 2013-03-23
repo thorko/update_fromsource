@@ -33,18 +33,18 @@ $cfghandle = new Config::Simple($config);
 Config::Simple->import_from($config, \%cc) or print("ERROR: ".Config::Simple->error());
 
 my $log_conf = "
-    log4perl.rootLogger=".$cc{'default.loglevel'}.",Logfile,SYSLOG
+    log4perl.rootLogger=".$cc{'default.loglevel'}.",Logfile
     log4perl.appender.Logfile=Log::Log4perl::Appender::File
     log4perl.appender.Logfile.filename=".$cc{'default.logfile'}."
     log4perl.appender.Logfile.mode=append
     log4perl.appender.Logfile.layout=PatternLayout
-    log4perl.appender.Logfile.layout.ConversionPattern=[%r] %F %L %c - %m%n
-    log4perl.appender.SYSLOG           = Log::Dispatch::Syslog
-    log4perl.appender.SYSLOG.min_level = ".lc($cc{'default.loglevel'});
+    log4perl.appender.Logfile.layout.ConversionPattern=%d [%r] %F %L %c - %m%n";
 
 Log::Log4perl->init(\$log_conf);
 $logger = Log::Log4perl->get_logger();
-my @mailfiles = glob($cc{'default.path'}."/*");
+my $path = $cc{'default.path'}."/".$cc{'default.user'}."/Maildir/.".$cc{'default.folder'}."/cur/*";
+my $sentpath = $cc{'default.path'}."/".$cc{'default.user'}."/Maildir/.Sent/cur/";
+my @mailfiles = glob($path);
 
 $logger->debug("Found ".scalar @mailfiles." mails");
 
@@ -66,9 +66,14 @@ foreach my $file (@mailfiles) {
   if(defined $sendtime) {
     if($sendepoch < $now) {
       $logger->info("Send mail, from $sendtime");
-      system("echo '$mail' | sendmail -t ");
+      system("echo '$mail' | /usr/sbin/sendmail -t ");
       $logger->debug("deleting file $file");
-      unlink($file);
+      # move mail to sent folder
+      $logger->debug("move mail to sent folder");
+      system("/bin/mv $file $sentpath");
+      $logger->debug("rebuild dovecot index for folder $cc{'default.folder'}");
+      system("/usr/local/bin/doveadm -v index -u $cc{'default.user'} $cc{'default.folder'} 2> /dev/null");
+      system("/usr/local/bin/doveadm -v index -u $cc{'default.user'} Sent 2> /dev/null");
     }
   }
 }
