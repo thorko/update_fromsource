@@ -53,8 +53,8 @@ foreach my $file (@mailfiles) {
   my $mail = read_file($file);
 
   # extract send time from subject
-  my ($sendtime) = $mail =~ m/Subject: (\d{4}-\d{2}-\d{2} \d{2}:\d{2})/;
-  $mail =~ s/Subject: \d{4}-\d{2}-\d{2} \d{2}:\d{2}\s/Subject: /;
+  my ($sendtime) = $mail =~ m/Subject: (\d{4}-\d{2}-\d{2} \d{2}:\d{2}(:\d{2})?)/;
+  $mail =~ s/Subject: \d{4}-\d{2}-\d{2} \d{2}:\d{2}(:\d{2})?\s/Subject: /;
 
   # change date time to now
   $mail =~ s/Date: \w{3}, \d{2} \w{3} \d{4} \d{2}:\d{2}:\d{2} \+0100/Date: $datetime/;
