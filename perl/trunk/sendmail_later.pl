@@ -17,7 +17,7 @@ my $cfghandle;
 my $help;
 our $logger;
 
-my $datetime = POSIX::strftime( "%a, %d %b %Y %H:%M:%S +0100", localtime());
+my $datetime = POSIX::strftime( "%a, %d %b %Y %H:%M:%S", localtime());
 Getopt::Long::Configure('bundling');
 GetOptions(
         "h|help" => \$help,
