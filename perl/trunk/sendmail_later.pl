@@ -59,7 +59,7 @@ foreach my $file (@mailfiles) {
   # change date time to now
   $mail =~ s/Date: \w{3}, \d{2} \w{3} \d{4} \d{2}:\d{2}:\d{2} \+0100/Date: $datetime/;
 
-  my $sendepoch = UnixDate(ParseDate($sendtime), "%s")."\n";
+  my $sendepoch = UnixDate(ParseDate($sendtime), "%s")."\n" if (defined $sendtime);
   my $now = UnixDate(ParseDate($datetime), "%s")."\n";
   # send mail
   # only send if sendtime is set
