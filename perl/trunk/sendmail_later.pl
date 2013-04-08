@@ -16,6 +16,7 @@ my $config;
 my $cfghandle;
 my $help;
 our $logger;
+my $now = 0;
 
 my $datetime = POSIX::strftime( "%a, %d %b %Y %H:%M:%S", localtime());
 Getopt::Long::Configure('bundling');
@@ -53,14 +54,15 @@ foreach my $file (@mailfiles) {
   my $mail = read_file($file);
 
   # extract send time from subject
-  my ($sendtime) = $mail =~ m/Subject: (\d{4}-\d{2}-\d{2} \d{2}:\d{2}(:\d{2})?)/;
+  my ($sendtime) = $mail =~ m/Subject: (\d{4}-\d{2}-\d{2} \d{1,2}:\d{2}(:\d{2})?)/;
   $mail =~ s/Subject: \d{4}-\d{2}-\d{2} \d{2}:\d{2}(:\d{2})?\s/Subject: /;
 
   # change date time to now
   $mail =~ s/Date: \w{3}, \d{2} \w{3} \d{4} \d{2}:\d{2}:\d{2} \+0100/Date: $datetime/;
 
   my $sendepoch = UnixDate(ParseDate($sendtime), "%s")."\n" if (defined $sendtime);
-  my $now = UnixDate(ParseDate($datetime), "%s")."\n";
+  $now = UnixDate(ParseDate($datetime), "%s")."\n";
+
   # send mail
   # only send if sendtime is set
   if(defined $sendtime) {
