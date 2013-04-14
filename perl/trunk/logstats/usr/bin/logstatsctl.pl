@@ -25,8 +25,6 @@ $cfghandle = new Config::Simple($config);
 Config::Simple->import_from($config, \%cc) or print("ERROR: ".Config::Simple->error());
 my $regex = $cfghandle->get_block('regex');
 
-
-
 sub help () {
 print <<'HELP';
 logstatsctl.pl -c <config> -l <command> [-h]
@@ -36,12 +34,18 @@ logstatsctl.pl -c <config> -l <command> [-h]
 HELP
 }
 
-tie(%foo, "DB_File", $cc{'default.statsdb'}, O_RDONLY, 0666, $DB_HASH) || die ("Cannot open $cc{default.statsdb}");
+my $db = tie(%foo, "DB_File", $cc{'default.statsdb'}, O_CREAT|O_RDWR, 0666,  $DB_HASH) || die ("Cannot open $cc{'default.statsdb'}");
 
 foreach my $order (keys %$regex) {
     if($list eq $order) {
 		print "$foo{$order}\n";
     }
+}
+
+if ($list eq "responsetime") {
+	print "$foo{responsetime}\n";
+	$foo{'responsetime'} = 0;
+        $db->sync;
 }
 
 untie %foo;

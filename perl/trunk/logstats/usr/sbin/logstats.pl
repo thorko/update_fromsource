@@ -2,9 +2,6 @@
 eval 'exec /usr/bin/perl  -S $0 ${1+"$@"}'
     if 0; # not running under some shell
 
-eval 'exec /usr/bin/perl  -S $0 ${1+"$@"}'
-    if 0; # not running under some shell
-
 use strict;
 use warnings;
 use DB_File;
@@ -28,6 +25,7 @@ GetOptions(
 print("ERROR: Couldn't find config $config") if ( ! -e $config);
 $cfghandle = new Config::Simple($config);
 Config::Simple->import_from($config, \%cc) or print("ERROR: ".Config::Simple->error());
+my $resptime = $cc{'default.timepattern'};
 my $regex = $cfghandle->get_block('regex');
 
 MAIN:
@@ -35,7 +33,6 @@ MAIN:
 my %stats;
 my $relay;
 $SIG{'HUP'} = 'handler';
-
 
 Proc::Daemon::Init();
 if (Proc::PID::File->running()) {
@@ -57,12 +54,12 @@ my $log_conf = "
 Log::Log4perl->init(\$log_conf);
 our $logger = Log::Log4perl->get_logger();
 
-
 my $db = tie(%stats, "DB_File", $cc{'default.statsdb'}, O_CREAT|O_RDWR, 0666, $DB_HASH);
 
 our $logref=tie(*LOG,"File::Tail",(name=>$cc{'default.service_log'},debug=>$debug,resetafter=>10));
 
 # initialize all counters to zero
+$stats{'responsetime'} = 0;
 foreach my $order (keys %$regex) {
      $logger->debug("Set order $order to 0");
      $stats{$order} = 0;
@@ -72,16 +69,23 @@ foreach my $order (keys %$regex) {
 $logger->info("Started $0...");
 
 while (<LOG>) {
-
    foreach my $order (keys %$regex) {
        if (/$regex->{$order}/) {
              $logger->debug("$order Order: $_");
 	     $stats{$order} += 1;
 	     $db->sync;
        }
+       if (/$resptime/) {
+             my ($tt) = $_ =~ m/$resptime/;
+                $logger->debug("Responetime: $tt");
+             if ($stats{'responsetime'} < $tt) {
+                $logger->debug("Responetime2: $tt");
+                $stats{'responsetime'} = $tt;
+                $db->sync; 
+             }
+       }
    }
 };
-
 
 sub handler {
 	my $signal = shift;
