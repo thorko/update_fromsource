@@ -34,6 +34,7 @@ my %stats;
 my $relay;
 $SIG{'HUP'} = 'handler';
 
+
 Proc::Daemon::Init();
 if (Proc::PID::File->running()) {
 	print( "ERROR: another prog is running");
@@ -56,7 +57,7 @@ our $logger = Log::Log4perl->get_logger();
 
 my $db = tie(%stats, "DB_File", $cc{'default.statsdb'}, O_CREAT|O_RDWR, 0666, $DB_HASH);
 
-our $logref=tie(*LOG,"File::Tail",(name=>$cc{'default.service_log'},debug=>$debug,resetafter=>10));
+our $logref=tie(*LOG,"File::Tail",(name=>$cc{'default.service_log'},debug=>$debug,resetafter=>10,interval=>5,maxinterval=>2));
 
 # initialize all counters to zero
 $stats{'responsetime'} = 0;
@@ -75,15 +76,18 @@ while (<LOG>) {
 	     $stats{$order} += 1;
 	     $db->sync;
        }
-       if (/$resptime/) {
-             my ($tt) = $_ =~ m/$resptime/;
-                $logger->debug("Responetime: $tt");
-             if ($stats{'responsetime'} < $tt) {
-                $logger->debug("Responetime2: $tt");
-                $stats{'responsetime'} = $tt;
-                $db->sync; 
-             }
-       }
+   }
+   if (/$resptime/) {
+         # get current counter
+	 $db->sync;
+         my $status = $db->get("responsetime", $stats{'responsetime'});
+         my ($tt) = $_ =~ m/$resptime/;
+         #$logger->debug("Responetime: $stats{'responsetime'}");
+         if ($stats{'responsetime'} < $tt) {
+            $logger->debug("Responsetime: $tt");
+            $stats{'responsetime'} = $tt;
+            $db->sync; 
+         }
    }
 };
 
