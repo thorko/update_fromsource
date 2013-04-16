@@ -34,19 +34,21 @@ logstatsctl.pl -c <config> -l <command> [-h]
 HELP
 }
 
-my $db = tie(%foo, "DB_File", $cc{'default.statsdb'}, O_CREAT|O_RDWR, 0666,  $DB_HASH) || die ("Cannot open $cc{'default.statsdb'}");
+my $db = tie(%stats, "DB_File", $cc{'default.statsdb'}, O_CREAT|O_RDWR, 0666,  $DB_HASH) || die ("Cannot open $cc{'default.statsdb'}");
 
 foreach my $order (keys %$regex) {
     if($list eq $order) {
-		print "$foo{$order}\n";
+		print "$stats{$order}\n";
     }
 }
 
 if ($list eq "responsetime") {
-	print "$foo{responsetime}\n";
-	$foo{'responsetime'} = 0;
-        $db->sync;
+	print "$stats{responsetime}\n";
+	$db->del("responsetime");
+	$db->sync;
+	$stats{'responsetime'} = 0;
+	$db->sync;
 }
 
-untie %foo;
+untie %stats;
 

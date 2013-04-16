@@ -78,14 +78,16 @@ while (<LOG>) {
        }
    }
    if (/$resptime/) {
-         # get current counter
-	 $db->sync;
-         my $status = $db->get("responsetime", $stats{'responsetime'});
+         # close the db before getting current value
+	 # otherwise it doesn't work
+	 untie %stats;
+	 $db = tie(%stats, "DB_File", $cc{'default.statsdb'}, O_CREAT|O_RDWR, 0666, $DB_HASH);
+	 my $value = 0;
+         my $status = $db->get("responsetime", $value);
          my ($tt) = $_ =~ m/$resptime/;
-         #$logger->debug("Responetime: $stats{'responsetime'}");
-         if ($stats{'responsetime'} < $tt) {
+         if ($value < $tt) {
             $logger->debug("Responsetime: $tt");
-            $stats{'responsetime'} = $tt;
+            $db->put('responsetime', $tt);
             $db->sync; 
          }
    }
