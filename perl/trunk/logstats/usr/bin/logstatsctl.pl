@@ -15,7 +15,8 @@ GetOptions(
 	"l|list=s" => \$list,
         "c|config=s"       => \$config);
 
-if ( $help || !$list || !$config ) {
+$config = defined($config) ? $config : "/etc/logstats.cfg";
+if ( $help || !$list ) {
 	&help();
 	exit(0);
 }
