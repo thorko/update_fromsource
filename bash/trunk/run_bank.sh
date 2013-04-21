@@ -1,7 +1,7 @@
 #!/bin/bash
 cipher="AES256"
-file[0]=/opt/scripts/perl/trunk/get_bank_status_comdirect.pl.pgp
-file[1]=/opt/scripts/perl/trunk/get_bank_status_dkb.pl.pgp
+file[0]=/opt/scripts/perl/trunk/get_bank_status.pl.pgp
+#file[1]=/opt/scripts/perl/trunk/get_bank_status_dkb.pl.pgp
 documents=/home/thorko/Documents/bank
 
 function decrypt_and_run () {
