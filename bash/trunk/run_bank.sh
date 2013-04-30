@@ -1,26 +1,21 @@
 #!/bin/bash
 cipher="AES256"
-file[0]=/opt/scripts/perl/trunk/get_bank_status.pl.pgp
-#file[1]=/opt/scripts/perl/trunk/get_bank_status_dkb.pl.pgp
+file=/opt/scripts/perl/trunk/get_bank_status.pl.pgp
 documents=/home/thorko/Documents/bank
 
 function decrypt_and_run () {
-	for l in "${file[@]}"; do
-		fn="${l%.*}"
-		echo $fn
-		gpg -d --no-use-agent -o $fn $l
-		perl $fn
-		rm $fn
-	done
+	fn="${file%.*}"
+	echo $fn
+	gpg -d --no-use-agent -o $fn $file
+	perl $fn -b $1
+	rm $fn
 }
 
 function show () {
-	for l in "${file[@]}"; do
-		fn="${l%.*}"
-        	gpg -d --no-use-agent -o $fn $l
-        	perl $fn -s
-		rm -f $fn
-	done
+	fn="${file%.*}"
+       	gpg -d --no-use-agent -o $fn $file
+       	perl $fn -s -b $1
+	rm -f $fn
 }
 
 function clean () {
@@ -33,12 +28,12 @@ option=$1
 
 case "$option" in
 	show)
-		show
+		show $2
 		;;
 	clean)
 		clean
 		;;
 	*)
-		decrypt_and_run
+		decrypt_and_run $option
 		;;
 esac
