@@ -12,23 +12,25 @@ use Getopt::Long;
 
 # config variables
 my $ret_file;
+my $recipient;
 my $help = 0;
 my $hostname = hostname;
 
 sub help_msg{
   print <<'MSG';
-./check_global_notifications.pl -r <retention file> [-h]
+./check_global_notifications.pl -s <retention file> -r <recipient> [-h]
 MSG
 }
 
 
 Getopt::Long::Configure('bundling');
 GetOptions(
-  "r|retentionfile=s" => \$ret_file,
+  "s|retentionfile=s" => \$ret_file,
+  "r|recipient=s" => \$recipient,
   "h|help" => \$help,
 );
 
-if($help || $ret_file eq "" ) {
+if($help || $ret_file eq "" || $recipient eq "" ) {
 	help_msg;
 	exit 0;
 }
@@ -41,7 +43,8 @@ $/="";
 open RET, "<$ret_file" or die("Couldn't open $ret_file");
 while(<RET>) {
 	if( $_ =~ /.*programstatus\s+{.*enable_notifications=0.*/s) {	
-		print "CRITICAL:  global notifications disabled on $hostname\n";
+		open(SENDMAIL,"|echo 'CRITICAL: global notification disabled on $hostname'| /bin/mail -s \"Notifications disabled on $hostname\" $recipient");
+		close(SENDMAIL);
 		exit 2;
 	}
 }
