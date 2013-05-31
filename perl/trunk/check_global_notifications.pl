@@ -37,7 +37,7 @@ if($help || $ret_file eq "" || $recipient eq "" ) {
 
 # enable locking
 unless (flock(DATA, LOCK_EX|LOCK_NB)) {
-	exit_error("$0 is already running. Exiting.\n");
+	die("$0 is already running. Exiting.\n");
 }
 $/="";
 open RET, "<$ret_file" or die("Couldn't open $ret_file");
@@ -45,9 +45,12 @@ while(<RET>) {
 	if( $_ =~ /.*programstatus\s+{.*enable_notifications=0.*/s) {	
 		open(SENDMAIL,"|echo 'CRITICAL: global notification disabled on $hostname'| /bin/mail -s \"Notifications disabled on $hostname\" $recipient");
 		close(SENDMAIL);
+		print "CRITICAL: global notification disabled on $hostname\n";
 		exit 2;
 	}
 }
+
+exit 0;
 
 __DATA__
 
