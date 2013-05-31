@@ -43,11 +43,17 @@ while(<RET>) {
 		$flag = 1;
 	}
 
-	if ( $flag && $_ =~ /.*GLOBAL Notifications.*problem_has_been_acknowledged=0/s) {
+	if ( $flag ) {
+	    # only sent if the notfications are disabled and the check didn't get acknowledged
+	    if ($_ =~ /.*GLOBAL Notifications.*problem_has_been_acknowledged=0/s) {
 		open(SENDMAIL,"|echo 'CRITICAL: global notification disabled on $hostname'| /bin/mail -s \"Notifications disabled on $hostname\" $recipient");
 		close(SENDMAIL);
 		print "CRITICAL: global notification disabled on $hostname\n";
 		exit 2;
+	    } else {
+		print "CRITICAL: global notification disabled on $hostname\n";
+		exit 2;
+	   }
 	}
 }
 print "OK\n";
