@@ -14,6 +14,7 @@ use Getopt::Long;
 my $ret_file;
 my $recipient;
 my $help = 0;
+my $flag = 0;
 my $hostname = hostname;
 
 sub help_msg{
@@ -35,22 +36,21 @@ if($help || $ret_file eq "" || $recipient eq "" ) {
 	exit 0;
 }
 
-# enable locking
-unless (flock(DATA, LOCK_EX|LOCK_NB)) {
-	die("$0 is already running. Exiting.\n");
-}
 $/="";
 open RET, "<$ret_file" or die("Couldn't open $ret_file");
 while(<RET>) {
 	if( $_ =~ /.*programstatus\s+{.*enable_notifications=0.*/s) {	
+		$flag = 1;
+	}
+
+	if ( $flag && $_ =~ /.*GLOBAL Notifications.*problem_has_been_acknowledged=0/s) {
 		open(SENDMAIL,"|echo 'CRITICAL: global notification disabled on $hostname'| /bin/mail -s \"Notifications disabled on $hostname\" $recipient");
 		close(SENDMAIL);
 		print "CRITICAL: global notification disabled on $hostname\n";
 		exit 2;
 	}
 }
-
+print "OK\n";
 exit 0;
 
-__DATA__
 
