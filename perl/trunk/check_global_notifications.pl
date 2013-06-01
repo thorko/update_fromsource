@@ -1,9 +1,9 @@
 #!/usr/bin/perl
-# this script will parse the retention.dat file
-# and search for disabled notifications
-# it sends a mail about those hosts / services 
-# hosts / services can be specified in disabled_notifications.conf
-# to be excluded til resubmission date.
+# this script checks if
+# the global notification are disabled 
+# on nagios. It will send an email
+# when the notification got disabled and 
+# this check doesn't have an acknowledgment
 
 use strict;
 use Fcntl qw(:flock);
