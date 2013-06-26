@@ -7,33 +7,33 @@ function decrypt_and_run () {
 	fn="${file%.*}"
 	echo $fn
 	gpg -d --no-use-agent -o $fn $file
-	perl $fn
+	perl $fn -b $1
 	rm $fn
 }
 
 function show () {
-	# get latest document
 	fn="${file%.*}"
-        gpg -d --no-use-agent -o $fn $file
-        perl $fn -s
+       	gpg -d --no-use-agent -o $fn $file
+       	perl $fn -s -b $1
 	rm -f $fn
 }
 
 function clean () {
 	cd $documents
 	find . -name "*.html" -exec rm -f {} \;
+	find . -name "*.csv" -exec rm -f {} \;
 }
 
 option=$1
 
 case "$option" in
 	show)
-		show
+		show $2
 		;;
 	clean)
 		clean
 		;;
 	*)
-		decrypt_and_run
+		decrypt_and_run $option
 		;;
 esac

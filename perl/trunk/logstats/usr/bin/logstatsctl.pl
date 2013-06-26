@@ -15,7 +15,8 @@ GetOptions(
 	"l|list=s" => \$list,
         "c|config=s"       => \$config);
 
-if ( $help || !$list || !$config ) {
+$config = defined($config) ? $config : "/etc/logstats.cfg";
+if ( $help || !$list ) {
 	&help();
 	exit(0);
 }
@@ -24,8 +25,6 @@ die "Couldn't open config $config\n" if ( ! -e $config );
 $cfghandle = new Config::Simple($config);
 Config::Simple->import_from($config, \%cc) or print("ERROR: ".Config::Simple->error());
 my $regex = $cfghandle->get_block('regex');
-
-
 
 sub help () {
 print <<'HELP';
@@ -36,13 +35,21 @@ logstatsctl.pl -c <config> -l <command> [-h]
 HELP
 }
 
-tie(%foo, "DB_File", $cc{'default.statsdb'}, O_RDONLY, 0666, $DB_HASH) || die ("Cannot open $cc{default.statsdb}");
+my $db = tie(%stats, "DB_File", $cc{'default.statsdb'}, O_CREAT|O_RDWR, 0666,  $DB_HASH) || die ("Cannot open $cc{'default.statsdb'}");
 
 foreach my $order (keys %$regex) {
     if($list eq $order) {
-		print "$foo{$order}\n";
+		print "$stats{$order}\n";
     }
 }
 
-untie %foo;
+if ($list eq "responsetime") {
+	print "$stats{responsetime}\n";
+	$db->del("responsetime");
+	$db->sync;
+	$stats{'responsetime'} = 0;
+	$db->sync;
+}
+
+untie %stats;
 
