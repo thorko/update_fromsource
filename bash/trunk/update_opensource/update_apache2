@@ -11,6 +11,13 @@ if [ "x$apache_version" == "x" -o "x$php_version" == "x" -o "x$mod_sec_version" 
 fi
 
 # compile apache
+cd /usr/local/src
+wget http://mirror.serversupportforum.de/apache//httpd/httpd-$apache_version.tar.gz
+if [ $? -ge 1 ]; then
+  echo "Couldn't download httpd-$apache_version.tar.gz"
+  exit 1
+fi
+tar -xzvf httpd-$apache_version.tar.gz
 cd /usr/local/src/httpd-$apache_version
 ./configure --prefix=/usr/local/apache2/$apache_version --enable-mods-shared="headers authz_svn auth_basic authn_file alias dav_lock dav_fs dav dav_svn cache disk_cache mem_cache ssl cgi rewrite unique_id" --enable-auth-digest --enable-substitute --enable-info --enable-vhost-alias --enable-status --enable-autoindex --enable-log-forensic --with-unique-id --enable-so --enable-deflate --enable-dav --enable-unixd
 make
@@ -26,7 +33,10 @@ fi
 
 # compile php5
 cd /usr/local/src/php-$php_version
-./configure  --prefix=/usr/local/php5/$php_version --with-pear --enable-cli --with-mysql --with-mysql-sock --enable-calendar --with-pcre-regex --with-mysqli --with-mcrypt --with-recode --with-gd --with-zlib --with-imap --with-imap-ssl --with-kerberos --enable-bcmath --with-pdo-mysql --with-apxs2=/usr/local/apache2/$apache_version/bin/apxs --with-freetype-dir --enable-gd-native-ttf --with-gettext --enable-dom --enable-sockets --enable-mbstring --with-jpeg-dir=/usr/lib --with-png-dir --enable-zip --with-curl --enable-json --enable-exif
+vim -c '%s/^\(.*test.*recode_conflict.*\)/#\1/gc' -c 'wq!' configure
+vim -c '%s/^\(.*test.*recode_conflict.*\)/dnl \1/gc' -c 'wq!' ext/recode/config9.m4
+     
+./configure  --prefix=/usr/local/php5/$php_version --with-pear --enable-cli --with-mysql --with-mysql-sock --enable-calendar --with-pcre-regex --with-mysqli --with-mcrypt --with-recode --with-gd --with-zlib --with-imap --with-imap-ssl --with-kerberos --enable-bcmath --with-pdo-mysql --with-apxs2=/usr/local/apache2/$apache_version/bin/apxs --with-freetype-dir --enable-gd-native-ttf --with-gettext --enable-dom --enable-sockets --enable-mbstring --with-jpeg-dir=/usr/lib --with-png-dir --enable-zip --with-curl --enable-json --enable-exif --with-libxml-dir=/usr/local/libxml2
 make
 if [ $? -eq 1 ]; then
 	echo "ERROR make php failed..."
