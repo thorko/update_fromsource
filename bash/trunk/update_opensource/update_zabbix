@@ -6,13 +6,14 @@ version=$1
 
 
 if [ "x$version" = "x" ]; then
-	echo "Usage: $0 <verson>"
+	echo "Usage: $0 <version>"
 	exit 1
 fi
 
 destdir=/usr/local/zabbix/$version
 builddir=/usr/local/src/zabbix
 
+wget http://downloads.sourceforge.net/project/zabbix/ZABBIX%20Latest%20Stable/$version/zabbix-$version.tar.gz -O /usr/local/src/zabbix/zabbix-$version.tar.gz
 if [ ! -f $builddir/zabbix-$version.tar.gz ]; then
 	echo "Source file zabbix-$version.tar.gz doesn't exist"
 	exit 1
