@@ -13,16 +13,16 @@ tar -xjvf owncloud-$oc_version.tar.bz2
 mv owncloud /var/www/owncloud/$oc_version
 
 # copy data
-rsync -alvz /var/www/owncloud/current/data/ /var/www/owncloud/$oc_version
+rsync -alvz /var/www/owncloud/current/data/ /var/www/owncloud/$oc_version/data
 
 # copy config
 cp /var/www/owncloud/current/config/config.php /var/www/owncloud/$oc_version/config/
 
 chown -R www-data: /var/www/owncloud/$oc_version
 # relink owncloud
-#cd /var/www/owncloud
-#rm -f current
-#ln -s $oc_version current
+cd /var/www/owncloud
+rm -f current
+ln -s $oc_version current
 
 echo "Done"
 
