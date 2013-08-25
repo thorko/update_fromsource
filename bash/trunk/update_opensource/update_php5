@@ -9,14 +9,9 @@ if [ "x$php_version" == "x" -o "x$apache_version" == "x" ]; then
 	exit 1
 fi
 
-if [ ! -f /usr/local/src/php-$php_version.tar.bz2 ]; then
-	echo "Source php-$php_version.tar.bz2 does not exist"
-	exit 1
-fi
-
-
 function update() {
     cd /usr/local/src
+    wget http://de2.php.net/get/php-$php_version.tar.bz2/from/de1.php.net/mirror -O php-$php_version.tar.bz2
     tar -xjvf /usr/local/src/php-$php_version.tar.bz2
     # compile php5
     cd /usr/local/src/php-$php_version
