@@ -2,13 +2,13 @@
 cipher="AES256"
 file=/opt/scripts/perl/trunk/get_bank_status.pl.pgp
 documents=/home/thorko/Documents/bank
+outfile=$(mktemp --tmpdir=/tmp)
 
 function decrypt_and_run () {
-	fn="${file%.*}"
-	echo $fn
-	gpg -d --no-use-agent -o $fn $file
-	perl $fn -b $1
-	rm $fn
+	echo $outfile
+	gpg -d --no-use-agent -o $outfile $file
+	perl $outfile -b $1
+	rm $outfile
 }
 
 function show () {
