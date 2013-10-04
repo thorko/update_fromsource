@@ -25,6 +25,7 @@ GetOptions(
   "u|user=s" => \$user,
   "d|database=s" => \$database,
   "s|schema=s" => \$schema,
+  "v|verbose" => \$verbose,
   );
 
 
@@ -57,6 +58,7 @@ foreach my $t ( split(/ /, $tables) ) {
 	$tables_list .= "-t $t ";
 }
 
+print "Dumping config tables...\n" if ($verbose);
 system("/usr/bin/pg_dump -U $user -a --schema=$schema $tables_list $database >> $zbx_cf_dump 2>/dev/null");
 ERRORDIE("pg_dump of zabbix config tables on $database failed\n") if( $? != 0 );
 
@@ -65,11 +67,13 @@ print SQLDUMP "COMMIT;\n";
 close SQLDUMP;
 #####################################
 
+print "Importing dump to remote $remote_host database server...\n" if ($verbose);
 system("/bin/cat $zbx_cf_dump | ssh $remote_host \"cat - | psql -U $user -d $database\ | grep COMMIT\"");
 if($? != 0) {
 ERRORDIE("restore of the $zbx_cf_dump script on $remote_host failed\nPlease check $zbx_cf_dump for syntax issues\n 
           to test run: /bin/cat $zbx_cf_dump | ssh $remote_host \"cat - | psql -U $user -d $database\"\n");
 } else {
+   print "Sync of zabbix configuration tables to $remote_host successfull\n" if ($verbose);
    INFO("Sync of zabbix configuration tables to $remote_host successfull");
 }
 
