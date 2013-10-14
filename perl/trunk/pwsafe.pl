@@ -178,7 +178,7 @@ sub help_msg{
 pwsafe.pl [-c <config>] -o <option> [-l <lookup pattern>] [-d] [-h] [-t <0|1>]
 
 -c, --config	config file to use
--o, --option	option can be "edit", "get", "add", "delete"a
+-o, --option	option can be "edit", "get", "add", "delete"
 -l, --lookup	pattern to search in the password database
 -t, --toclip	0 or 1 
 		0 will disable copy to clipboard
