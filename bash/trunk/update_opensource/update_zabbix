@@ -23,7 +23,7 @@ cd $builddir
 tar -xzvf zabbix-$version.tar.gz
 cd zabbix-$version
 export PATH=$PATH:/usr/local/java/current/bin/
-./configure --prefix=$destdir --enable-agent --enable-server --with-libcurl --with-net-snmp --with-ssh2 --with-mysql --enable-proxy --enable-java
+./configure --prefix=$destdir --enable-agent --enable-server --with-libcurl --with-net-snmp --with-ssh2 --with-mysql --enable-proxy --enable-java --with-unixodbc
 make
 if [ $? -eq 1 ]; then
 	echo "ERROR make failed..."
