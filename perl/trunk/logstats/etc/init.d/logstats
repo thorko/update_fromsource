@@ -44,7 +44,7 @@ stop()
 {
 	echo -n $"Stopping $prog: "
 	if [ -n "`pidfileofproc $LOGSTAT`" ] ; then
-	    killproc $LOGSTAT
+	    pkill -QUIT -f $LOGSTAT
 	else
 	    failure $"Stopping $prog"
 	fi
@@ -58,6 +58,11 @@ restart() {
 	start
 }
 
+reload () {
+	pkill -HUP -f $LOGSTAT
+}
+	
+
 case "$1" in
 	start)
 		start
@@ -68,11 +73,14 @@ case "$1" in
 	restart)
 		restart
 		;;
+	reload)
+		reload
+		;;
 	status)
 		status $LOGSTAT
 		;;
 	*)
-		echo $"Usage: $0 {start|stop|restart|status}"
+		echo $"Usage: $0 {start|stop|restart|reload|status}"
 		RETVAL=2
 esac
 exit $RETVAL
