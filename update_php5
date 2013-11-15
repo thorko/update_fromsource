@@ -1,1 +1,76 @@
-/opt/scripts/bash/trunk/update_opensource/update_php5
+#!/bin/bash
+
+php_version=$1
+apache_version=$2
+mode=$3
+
+if [ "x$php_version" == "x" -o "x$apache_version" == "x" ]; then
+	echo "Usage: $0 <php version> <apache version> <update|rollback>"
+	exit 1
+fi
+
+function update() {
+    cd /usr/local/src
+    wget http://de2.php.net/get/php-$php_version.tar.bz2/from/de1.php.net/mirror -O php-$php_version.tar.bz2
+    tar -xjvf /usr/local/src/php-$php_version.tar.bz2
+    # compile php5
+    cd /usr/local/src/php-$php_version
+    # patch php5 to work with recode and imap
+    vim -c '%s/^\(.*test.*recode_conflict.*\)/#\1/gc' -c 'wq!' configure
+    vim -c '%s/^\(.*test.*recode_conflict.*\)/dnl \1/gc' -c 'wq!' ext/recode/config9.m4
+     
+    ./configure  --prefix=/usr/local/php5/$php_version --with-pear --enable-cli --with-mysql --with-mysql-sock --enable-calendar --with-pcre-regex --with-mysqli --with-mcrypt --with-recode --with-gd --with-zlib --with-imap --with-imap-ssl --with-kerberos --enable-bcmath --with-pdo-mysql --with-apxs2=/usr/local/apache2/$apache_version/bin/apxs --with-freetype-dir --enable-gd-native-ttf --with-gettext --enable-dom --enable-sockets --enable-mbstring --with-jpeg-dir=/usr/lib --with-png-dir --enable-zip --with-curl --enable-json --enable-exif --with-libxml-dir=/usr/local/libxml2
+    make
+    if [ $? -eq 1 ]; then
+    	echo "ERROR make failed..."
+    	exit 1
+    fi
+    make install
+    if [ $? -eq 1 ]; then
+    	echo "ERROR make failed..."
+    	exit 1
+    fi
+
+    # after install delete php module line from httpd.conf
+    sed -i '/^LoadModule php5_module/d' /etc/apache2/httpd.conf
+    
+    # relink everything
+    cp libs/libphp5.so /usr/local/php5/$php_version/lib
+    cd /usr/local/php5/$php_version/lib
+    ln -s /etc/php5/apache2/php.ini ./
+    cd /usr/local/php5
+    rm -f current && ln -s ./$php_version ./current
+    
+    rm -f /usr/local/apache2/$apache_version/modules/libphp5.so
+    ln -s /usr/local/php5/current/lib/libphp5.so /usr/local/apache2/$apache_version/modules/libphp5.so
+    
+    if [ ! -f /usr/local/php5/current/lib/php.ini ]; then
+    	echo "NO php.ini linked to current"
+    fi
+    apachectl -t
+    if [ $? -eq 0 ]; then
+    	/etc/init.d/apache2 stop
+    	sleep 4
+    	/etc/init.d/apache2 start
+    fi
+    # needed for sms sending
+    /usr/local/bin/pear install Log
+}
+
+function rollback() {
+    cd /usr/local/php5
+    rm -f current && ln -s ./$php_version ./current
+    apachectl -t
+    if [ $? -eq 0 ]; then
+    	/etc/init.d/apache2 stop
+    	sleep 2
+    	/etc/init.d/apache2 start
+    fi
+}
+
+
+case "$3" in
+    update) update;;
+    rollback) rollback;;
+    *) echo "usage: $0 <php version> <apache version> <update|rollback>";;
+esac
