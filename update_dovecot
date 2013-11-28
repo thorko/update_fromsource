@@ -27,6 +27,8 @@ fi
 
 # compile pigeon
 cd /usr/local/src/dovecot
+# clean up the source directory
+rm -rf dovecot-.*pigeonhole.*
 wget http://www.rename-it.nl/dovecot/2.2/dovecot-2.2-pigeonhole-$pig_version.tar.gz
 tar -xzvf dovecot-2.2-pigeonhole-$pig_version.tar.gz
 cd dovecot-2.2-pigeonhole-$pig_version
@@ -53,6 +55,8 @@ fi
 
 cd /usr/local/dovecot
 /etc/init.d/dovecot stop
+# dovecot doesn't stop savely
+pkill -9 -f dovecot
 rm -f current
 ln -s $dovecot_version current
 /etc/init.d/dovecot start
