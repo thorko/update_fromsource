@@ -10,6 +10,10 @@ fi
 
 cd /usr/local/src/dovecot
 wget http://dovecot.org/releases/2.2/dovecot-$dovecot_version.tar.gz
+if [ $? -ge 1 ]; then
+  echo "Couldn't download dovecot-$dovecot_version.tar.gz"
+  exit 1
+fi
 # compile dovecot
 tar -xzvf dovecot-$dovecot_version.tar.gz
 cd dovecot-$dovecot_version
@@ -30,6 +34,10 @@ cd /usr/local/src/dovecot
 # clean up the source directory
 rm -rf dovecot-.*pigeonhole.*
 wget http://www.rename-it.nl/dovecot/2.2/dovecot-2.2-pigeonhole-$pig_version.tar.gz
+if [ $? -ge 1 ]; then
+  echo "Couldn't download dovecot-2.2-pigeonhole-$pig_version.tar.gz"
+  exit 1
+fi
 tar -xzvf dovecot-2.2-pigeonhole-$pig_version.tar.gz
 cd dovecot-2.2-pigeonhole-$pig_version
 ./configure --with-dovecot=/usr/local/dovecot/$dovecot_version/lib/dovecot
