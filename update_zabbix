@@ -10,30 +10,18 @@ if [ "x$version" = "x" ]; then
 	exit 1
 fi
 
+. /usr/local/src/update/lib/functions
+
 destdir=/usr/local/zabbix/$version
 builddir=/usr/local/src/zabbix
 
-wget --prefer-family=ipv4 http://downloads.sourceforge.net/project/zabbix/ZABBIX%20Latest%20Stable/$version/zabbix-$version.tar.gz -O /usr/local/src/zabbix/zabbix-$version.tar.gz
-if [ ! -f $builddir/zabbix-$version.tar.gz ]; then
-	echo "Source file zabbix-$version.tar.gz doesn't exist"
-	exit 1
-fi
+cd /usr/local/src/zabbix
+clean_oldsrc zabbix-$version
 
-cd $builddir
-tar -xzvf zabbix-$version.tar.gz
-cd zabbix-$version
+download_src "http://downloads.sourceforge.net/project/zabbix/ZABBIX%20Latest%20Stable/$version/zabbix-$version.tar.gz" zabbix-$version.tar.gz
+
 export PATH=$PATH:/usr/local/java/current/bin/
-./configure --prefix=$destdir --enable-agent --enable-server --with-libcurl --with-net-snmp --with-ssh2 --with-mysql --enable-proxy --enable-java --with-unixodbc
-make
-if [ $? -eq 1 ]; then
-	echo "ERROR make failed..."
-	exit 1
-fi
-make install
-if [ $? -eq 1 ]; then
-	echo "ERROR make install failed..."
-	exit 1
-fi
+extract_and_compile zabbix $version "--prefix=$destdir --enable-agent --enable-server --with-libcurl --with-net-snmp --with-ssh2 --with-mysql --enable-proxy --enable-java --with-unixodbc"
 
 # copy frontend
 cp -R frontends/php $destdir/frontends
