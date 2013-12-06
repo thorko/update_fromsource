@@ -1,0 +1,34 @@
+#!/bin/bash
+
+mariadb_version=$1
+
+if [ "x$mariadb_version" == "x" ]; then
+	echo "Usage: $0 <mariadb version>"
+	exit 1
+fi
+
+. /usr/local/src/update/lib/functions
+
+cd /usr/local/src/mariadb
+clean_oldsrc mariadb-$mariadb_version
+download_src "https://downloads.mariadb.org/f/mariadb-$mariadb_version/kvm-tarbake-jaunty-x86/mariadb-$mariadb_version.tar.gz/from/http:/mirror3.layerjet.com/mariadb" mariadb-$mariadb_version.tar.gz
+
+extract_and_compile mariadb $mariadb_version "--prefix=/usr/local/mariadb/$mariadb_version --with-mysqld-user=mysql --with-mysqlmanager --enable-profiling --with-plugins=myisam,archive,blackhole,csv,ibmdb2i,innodb_plugin,aria,myisammrg,xtradb,federated,partition,pbxt"
+
+# make a backup of mysql databases
+echo -en "Will make a backup of you database\nEnter your root mysql password: "
+read pw
+mysqldump -u root --password=$pw --all-databases > /var/tmp/mysql-backup-$(date +'%Y-%m-%d-%H-%M').sql
+if [ $? -eq 1 ]; then
+	echo "ERROR mysqldump failed..."
+	exit 1
+fi
+
+
+# relink
+/etc/init.d/mysql stop
+rm /usr/local/mariadb/current && ln -s /usr/local/mariadb/$mariadb_version /usr/local/mariadb/current
+/etc/init.d/mysql start
+
+echo -e "Your backup is /var/tmp/mysql-backup-$(date +'%Y-%m-%d-%H-%M').sql\n"
+

@@ -1,0 +1,60 @@
+clean_oldsrc () {
+	name=$1
+
+	echo "remove old source"
+	rm -rf $name $name.tar.gz $name.tar.bz2 $name.tgz $name.tbz2
+
+}
+
+download_src () {
+	link=$1
+        target=$2
+	
+	wget $link -O $target
+	if [ $? -ge 1 ]; then
+		echo "Couldn't download $target"
+		exit 1
+	fi
+}
+
+extract_and_compile() {
+	name=$1
+	version=$2
+	configure=$3
+	
+	source=$(ls -1 $name-$version.t*)
+	perl -e "'$source' =~ /(tar.gz|tgz)/ || exit 1"
+	if [ $? -eq 0 ]; then
+		extract="tar -xzvf"
+	else 
+		extract="tar -xjvf"
+	fi
+
+	$extract $source
+	if [ $? -ge 1 ]; then
+		echo "extracting source $source failed."
+		exit 1
+	fi
+
+	cd $name-$version
+	./configure $configure
+	if [ $? -ge 1 ]; then
+		echo "configure with $configure failed."
+		exit 1
+	fi
+
+	make
+	if [ $? -ge 1 ]; then
+		echo "make failed."
+		exit 1
+	fi
+	
+	make install
+	if [ $? -ge 1 ]; then
+		echo "make install failed."
+		exit 1
+	fi
+
+	
+}
+
