@@ -1,9 +1,0 @@
-#!/bin/sh
-# Create a new yakuake shell
-qdbus org.kde.yakuake /yakuake/sessions addSession
-# Find out which terminal is the newest
-terminalID=$(qdbus org.kde.yakuake | grep Sessions | cut --fields "3" --delim="/" | sort -n | tail -n 1);
-# Set title for the new terminal
-qdbus org.kde.yakuake /yakuake/tabs setTabTitle $((terminalID-1)) $1
-qdbus org.kde.yakuake /yakuake/sessions runCommandInTerminal $((terminalID-1)) "ssh $1"
-qdbus org.kde.yakuake /yakuake/window toggleWindowState > /dev/null
