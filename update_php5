@@ -59,6 +59,8 @@ function update() {
     fi
     # needed for sms sending
     /usr/local/bin/pear install Log
+    # needed for piwik geo Location
+    /usr/local/bin/pecl install GeoIP
 }
 
 function rollback() {
