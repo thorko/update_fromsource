@@ -101,7 +101,7 @@ if [ $? -eq 1 ]; then
 	exit 1
 fi
 
- copy modules
+# copy modules
 cp /usr/local/src/subversion-$svn_version/subversion/mod_dav_svn/.libs/mod_dav_svn.so /usr/local/apache2/$apache_version/modules/
 cp /usr/local/src/subversion-$svn_version/subversion/mod_authz_svn/.libs/mod_authz_svn.so /usr/local/apache2/$apache_version/modules/
 
