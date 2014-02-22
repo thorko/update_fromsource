@@ -1,0 +1,26 @@
+#!/bin/bash
+
+version=$1
+
+if [ "x$version" == "x" ]; then
+	echo "Usage: $0 <version>"
+	exit 1
+fi
+
+. /usr/local/src/update/lib/functions
+
+cd /usr/local/src
+clean_oldsrc unbound-$version
+
+download_src "http://unbound.net/downloads/unbound-$version.tar.gz" unbound-$version.tar.gz
+
+extract_and_compile unbound $version "--prefix=/usr/local/unbound/$version --with-chroot-dir=/var/lib/unbound --disable-gost --with-ldns=/usr/local/ldns/1.6.16"
+
+cd /usr/local/unbound/$version/etc
+ln -s /etc/unbound/unbound.conf .
+
+cd /usr/local/unbound
+/etc/init.d/unbound stop
+rm -f current
+ln -s $version current
+/etc/init.d/unbound start
