@@ -18,7 +18,7 @@ extract_and_compile ldns $ldnsuversion "--prefix=/usr/local/ldns/$ldnsuversion -
 
 clean_oldsrc unbound-$uversion
 download_src "http://unbound.net/downloads/unbound-$uversion.tar.gz" unbound-$uversion.tar.gz
-extract_and_compile unbound $uversion "--prefix=/usr/local/unbound/$uversion --with-chroot-dir=/var/lib/unbound --disable-gost --with-ldns=/usr/local/ldns/$ldnsuversion"
+extract_and_compile unbound $uversion "--prefix=/usr/local/unbound/$uversion --with-ssl=/usr/local/openssl/current --with-chroot-dir=/var/lib/unbound --disable-gost --with-ldns=/usr/local/ldns/$ldnsuversion"
 
 cd /usr/local/unbound/$uversion/etc
 ln -s /etc/unbound/unbound.conf .
