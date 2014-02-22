@@ -1,26 +1,30 @@
 #!/bin/bash
 
-version=$1
+uversion=$1
+ldnsuversion=$2
 
-if [ "x$version" == "x" ]; then
-	echo "Usage: $0 <version>"
+if [ "x$uversion" == "x" -o "x$ldnsuversion" == "x" ]; then
+	echo "Usage: $0 <version> <ldns uversion>"
 	exit 1
 fi
 
 . /usr/local/src/update/lib/functions
 
 cd /usr/local/src
-clean_oldsrc unbound-$version
 
-download_src "http://unbound.net/downloads/unbound-$version.tar.gz" unbound-$version.tar.gz
+clean_oldsrc ldns-$ldnsuversion
+download_src "http://www.nlnetlabs.nl/downloads/ldns/ldns-$ldnsuversion.tar.gz" ldns-$ldnsuversion.tar.gz
+extract_and_compile ldns $ldnsuversion "--prefix=/usr/local/ldns/$ldnsuversion --with-ssl=/usr/local/openssl/current"
 
-extract_and_compile unbound $version "--prefix=/usr/local/unbound/$version --with-chroot-dir=/var/lib/unbound --disable-gost --with-ldns=/usr/local/ldns/1.6.16"
+clean_oldsrc unbound-$uversion
+download_src "http://unbound.net/downloads/unbound-$uversion.tar.gz" unbound-$uversion.tar.gz
+extract_and_compile unbound $uversion "--prefix=/usr/local/unbound/$uversion --with-chroot-dir=/var/lib/unbound --disable-gost --with-ldns=/usr/local/ldns/$ldnsuversion"
 
-cd /usr/local/unbound/$version/etc
+cd /usr/local/unbound/$uversion/etc
 ln -s /etc/unbound/unbound.conf .
 
 cd /usr/local/unbound
 /etc/init.d/unbound stop
 rm -f current
-ln -s $version current
+ln -s $uversion current
 /etc/init.d/unbound start
