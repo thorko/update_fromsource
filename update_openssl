@@ -15,6 +15,9 @@ clean_oldsrc openssl-$version
 download_src "http://www.openssl.org/source/openssl-$version.tar.gz" openssl-$version.tar.gz
 tar -xvzf openssl-$version.tar.gz
 cd openssl-$version
+if [ -f /usr/local/src/openssl-pod.patch ]; then
+   patch -p1 < ../openssl-pod.patch
+fi
 ./config --prefix=/usr/local/openssl/$version -fPIC
 if [ $? -eq 1 ]; then
   echo "ERROR config failed..."
