@@ -10,7 +10,7 @@ fi
 
 . /usr/local/src/update/lib/functions
 
-cd /usr/local/src/dovecot
+mkdir -p /usr/local/src/dovecot && cd /usr/local/src/dovecot
 clean_oldsrc dovecot-$dovecot_version
 
 download_src "http://dovecot.org/releases/2.2/dovecot-$dovecot_version.tar.gz" dovecot-$dovecot_version.tar.gz
