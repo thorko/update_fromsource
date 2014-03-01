@@ -37,6 +37,7 @@ if [ $? -eq 1 ]; then
 	echo "ERROR make install apache failed..."
 	exit 1
 fi
+ln -s /usr/local/apache2/$apache_version /usr/local/apache2/current
 
 # compile php5
 wget http://de2.php.net/get/php-$php_version.tar.bz2/from/de1.php.net/mirror -O php-$php_version.tar.bz2
@@ -46,8 +47,9 @@ if [ $? -ge 1 ]; then
 fi
 tar -xjvf /usr/local/src/php-$php_version.tar.bz2
 cd /usr/local/src/php-$php_version
-vim -c '%s/^\(.*test.*recode_conflict.*\)/#\1/gc' -c 'wq!' configure
-vim -c '%s/^\(.*test.*recode_conflict.*\)/dnl \1/gc' -c 'wq!' ext/recode/config9.m4
+#vim -c '%s/^\(\s*test.*recode_conflict.*\)/#\1/g' -c 'wq!' configure
+sed -i 's/^\(\s*test.*recode_conflict.*\)/#\1/g' configure
+sed -i 's/^\(\s*test.*recode_conflict.*\)/dnl \1/g' ext/recode/config9.m4
      
 ./configure  --prefix=/usr/local/php5/$php_version --with-pear --enable-cli --with-mysql --with-mysql-sock --enable-calendar --with-pcre-regex --with-mysqli --with-mcrypt --with-recode --with-gd --with-zlib --with-imap --with-imap-ssl --with-kerberos --enable-bcmath --with-pdo-mysql --with-apxs2=/usr/local/apache2/$apache_version/bin/apxs --with-freetype-dir --enable-gd-native-ttf --with-gettext --enable-dom --enable-sockets --enable-mbstring --with-jpeg-dir=/usr/lib --with-png-dir --enable-zip --with-curl --enable-json --enable-exif --with-libxml-dir=/usr/local/libxml2
 make
@@ -60,6 +62,7 @@ if [ $? -eq 1 ]; then
 	echo "ERROR make install php failed..."
 	exit 1
 fi
+ln -s /usr/local/php5/$php_version /usr/local/php5/current
 
 # compile subversion for mod_dav_svn
 wget http://apache.mirror.digionline.de/subversion/subversion-$svn_version.tar.gz
