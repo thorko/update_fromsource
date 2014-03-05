@@ -15,7 +15,7 @@ clean_oldsrc dovecot-$dovecot_version
 
 download_src "http://dovecot.org/releases/2.2/dovecot-$dovecot_version.tar.gz" dovecot-$dovecot_version.tar.gz
 
-extract_and_compile dovecot $dovecot_version "--prefix=/usr/local/dovecot/$dovecot_version --with-shadow --with-pam --with-ssl=openssl --sysconfdir=/etc"
+extract_and_compile dovecot $dovecot_version "--prefix=/usr/local/dovecot/$dovecot_version --with-shadow --with-pam --with-ssl=openssl --with-mysql --sysconfdir=/etc"
 
 # compile pigeon
 # clean up the source directory
