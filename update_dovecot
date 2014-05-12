@@ -21,7 +21,7 @@ extract_and_compile dovecot $dovecot_version "--prefix=/usr/local/dovecot/$dovec
 # clean up the source directory
 clean_oldsrc dovecot-2.2-pigeonhole-$pig_version
 
-download_src "http://www.rename-it.nl/dovecot/2.2/dovecot-2.2-pigeonhole-$pig_version.tar.gz" dovecot-2.2-pigeonhole-$pig_version.tar.gz
+download_src "http://pigeonhole.dovecot.org/releases/2.2/dovecot-2.2-pigeonhole-$pig_version.tar.gz" dovecot-2.2-pigeonhole-$pig_version.tar.gz
 
 extract_and_compile dovecot-2.2-pigeonhole $pig_version "--with-dovecot=/usr/local/dovecot/$dovecot_version/lib/dovecot"
 
