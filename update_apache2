@@ -18,7 +18,7 @@ rm -rf /usr/local/src/subversion-$svn_version?(.tar.gz)
 rm -rf /usr/local/src/modsecurity-apache-$mod_sec_version?(.tar.gz)
 
 # compile apache
-cd /usr/local/src
+mkdir -p /usr/local/src && cd /usr/local/src
 wget http://mirror.serversupportforum.de/apache//httpd/httpd-$apache_version.tar.gz -O /usr/local/src/httpd-$apache_version.tar.gz
 if [ $? -ge 1 ]; then
   echo "Couldn't download httpd-$apache_version.tar.gz"

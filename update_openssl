@@ -9,7 +9,7 @@ fi
 
 . /usr/local/src/update/lib/functions
 
-cd /usr/local/src/
+mkdir -p /usr/local/src && cd /usr/local/src/
 clean_oldsrc openssl-$version
 
 download_src "http://www.openssl.org/source/openssl-$version.tar.gz" openssl-$version.tar.gz

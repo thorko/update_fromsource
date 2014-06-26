@@ -9,7 +9,7 @@ fi
 
 . /usr/local/src/update/lib/functions
 
-cd /usr/local/src/
+mkdir -p /usr/local/src && cd /usr/local/src/
 clean_oldsrc bogofilter-$bg_version
 download_src "http://downloads.sourceforge.net/project/bogofilter/bogofilter-1.2.4/bogofilter-1.2.4.tar.bz2?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fbogofilter%2Ffiles%2Fbogofilter-1.2.4%2F&ts=1392990007&use_mirror=garr" bogofilter-$bg_version.tar.bz2
 

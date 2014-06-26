@@ -10,7 +10,7 @@ fi
 
 . /usr/local/src/update/lib/functions
 
-cd /usr/local/src
+mkdir -p /usr/local/src && cd /usr/local/src
 
 clean_oldsrc ldns-$ldnsuversion
 download_src "http://www.nlnetlabs.nl/downloads/ldns/ldns-$ldnsuversion.tar.gz" ldns-$ldnsuversion.tar.gz

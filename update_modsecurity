@@ -9,7 +9,7 @@ if [ "x$ms_version" == "x" -o "x$apache_version" == "x" ]; then
 fi
 
 # compile modsecurity
-cd /usr/local/src
+mkdir -p /usr/local/src && cd /usr/local/src
 tar -xzvf modsecurity-apache_$ms_version.tar.gz
 cd /usr/local/src/modsecurity-apache_$ms_version
 ./configure --prefix=/usr/local/modsecurity/$ms_version --with-apxs=/usr/local/apache2/$apache_version/bin/apxs
