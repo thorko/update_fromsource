@@ -1,3 +1,8 @@
+init () {
+  mkdir -p $ipath
+  mkdir -p $spath
+}
+
 clean_oldsrc () {
 	name=$1
 
@@ -21,6 +26,7 @@ extract_and_compile() {
 	name=$1
 	version=$2
 	configure=$3
+  auto_apt=0
 	
 	source=$(ls -1 $name-$version.t*)
 	perl -e "'$source' =~ /(tar.gz|tgz)/ || exit 1"
@@ -37,7 +43,27 @@ extract_and_compile() {
 	fi
 
 	cd $name-$version
-	./configure $configure
+
+  # install auto-apt if it isn't installed and 
+  # distro is Debian/Ubuntu
+  if [ $distro == "Debian" -o $distro == "Ubuntu" ]; then
+    dpkg -s auto-apt > /dev/null 2>&1
+    auto_apt=$?
+  fi
+  if [ $auto_apt == 1 ]; then
+    read -rep $'If you install "auto-apt" and run "auto-apt update", "auto-apt update-local" afterwards
+it will automatically install all dependencies when compiling from source
+Hit [Enter] to continue or [CTRL-C] to break '
+  fi
+  # if a current link already exists 
+  # assume all dependencies got already installed 
+  # so run it without auto-apt
+  if [ $auto_apt == 1 -o -L /usr/local/$name/current ]; then
+	  ./configure $configure
+  else
+    auto-apt -y -x run ./configure $configure
+  fi
+
 	if [ $? -ge 1 ]; then
 		echo "configure with $configure failed."
 		exit 1

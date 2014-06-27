@@ -7,21 +7,24 @@ if [ "x$bg_version" == "x" ]; then
 	exit 1
 fi
 
-. /usr/local/src/update/lib/functions
+. $(dirname $0)/config.sh
+. $(dirname $0)/lib/functions
 
-mkdir -p /usr/local/src && cd /usr/local/src/
+init
+
+cd $spath
 clean_oldsrc bogofilter-$bg_version
 download_src "http://downloads.sourceforge.net/project/bogofilter/bogofilter-1.2.4/bogofilter-1.2.4.tar.bz2?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fbogofilter%2Ffiles%2Fbogofilter-1.2.4%2F&ts=1392990007&use_mirror=garr" bogofilter-$bg_version.tar.bz2
 
-extract_and_compile bogofilter $bg_version "--prefix=/usr/local/bogofilter/$bg_version"
+extract_and_compile bogofilter $bg_version "--prefix=$ipath/bogofilter/$bg_version"
 # relink bogofilter
-cd /usr/local/bogofilter
+cd $ipath/bogofilter
 
 rm -f current
 ln -s $bg_version current
 
-cd /usr/local/bogofilter/current/etc/
+cd $ipath/bogofilter/current/etc/
 ln -s /etc/bogofilter/bogofilter.cf .
 
 # clean up
-rm -rf /usr/local/src/bogofilter-$bg_version
+rm -rf $spath/bogofilter-$bg_version
