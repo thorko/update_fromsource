@@ -9,12 +9,19 @@ if [ "x$version" == "x" ]; then
   exit 1
 fi
 
+. $(dirname $0)/config.sh
+. $(dirname $0)/lib/functions
+
+init
+
 # split version
 IFS="u"
 set -- $version
 majorv=$1
 shift
 minorv=$@
+
+IFS=''
 
 # stop all
 if [ "x$restart" != "x" ]; then
@@ -23,14 +30,18 @@ if [ "x$restart" != "x" ]; then
   /etc/init.d/red5-server stop
 fi
 
-mkdir /usr/local/java
-cd /usr/local/java
-tar -xzvf /usr/local/src/jdk-${majorv}u${minorv}-linux-x64.tar.gz
+mkdir -p $ipath/java
+cd $ipath/java
+if [ ! -f "$spath/jdk-${majorv}u${minorv}-linux-x64.tar.gz" ]; then
+  echo "You will need to upload jdk-${majorv}u${minorv}-linux-x64.tar.gz to $spath"
+  exit 1
+fi
+tar -xzvf $spath/jdk-${majorv}u${minorv}-linux-x64.tar.gz
 rm -f current
 ln -s jdk1.$majorv.0_$minorv current
 chown -R root: jdk1.$majorv.0_$minorv
 
-export JAVA_HOME=/usr/local/java/current
+export JAVA_HOME=$ipath/java/current
 if [ "x$restart" != "x" ]; then
   sleep 4
   /etc/init.d/tomcat start

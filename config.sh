@@ -6,3 +6,6 @@ ipath=/usr/local
 
 # path to source directory
 spath=/usr/local/src
+
+# apache user
+www_user="www-data"

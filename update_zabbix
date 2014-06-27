@@ -10,17 +10,20 @@ if [ "x$version" = "x" ]; then
 	exit 1
 fi
 
-. /usr/local/src/update/lib/functions
+. $(dirname $0)/config.sh
+. $(dirname $0)/lib/functions
 
-destdir=/usr/local/zabbix/$version
-builddir=/usr/local/src/zabbix
+init
 
-mkdir -p /usr/local/src/zabbix && cd /usr/local/src/zabbix
+destdir=$ipath/zabbix/$version
+builddir=$spath/zabbix
+
+mkdir -p $builddir && cd $builddir
 clean_oldsrc zabbix-$version
 
 download_src "http://downloads.sourceforge.net/project/zabbix/ZABBIX%20Latest%20Stable/$version/zabbix-$version.tar.gz" zabbix-$version.tar.gz
 
-export PATH=$PATH:/usr/local/java/current/bin/
+export PATH=$PATH:$ipath/java/current/bin/
 extract_and_compile zabbix $version "--prefix=$destdir --enable-agent --enable-server --with-libcurl --with-net-snmp --with-ssh2 --with-mysql --enable-proxy --enable-java --with-unixodbc"
 
 # copy frontend
@@ -33,13 +36,13 @@ ln -s /etc/zabbix/zabbix_server.conf $destdir/etc/
 /etc/init.d/zabbix-server stop
 /etc/init.d/zabbix-agent stop
 sleep 3
-rm -f /usr/local/zabbix/current && ln -s $destdir /usr/local/zabbix/current
+rm -f $ipath/zabbix/current && ln -s $destdir $ipath/zabbix/current
 /etc/init.d/zabbix-server start
 sleep 3
 /etc/init.d/zabbix-agent start
 
 # change ownership of frontend
-chown -R www-data: /usr/local/zabbix/current/frontends
+chown -R $www_user: $ipath/zabbix/current/frontends
 
 # clean up
-rm -rf /usr/local/src/zabbix/zabbix-$version
+rm -rf $spath/zabbix/zabbix-$version

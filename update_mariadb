@@ -7,7 +7,10 @@ if [ "x$mariadb_version" == "x" ]; then
 	exit 1
 fi
 
-. /usr/local/src/update/lib/functions
+. $(dirname $0)/config.sh
+. $(dirname $0)/lib/functions
+
+init
 
 # make a backup of mysql databases
 function make_backup () {
@@ -20,14 +23,14 @@ function make_backup () {
 	echo "Your backup is at /var/backups/mysql"
 }
 
-mkdir -p /usr/local/src/mariadb/ && cd /usr/local/src/mariadb
+mkdir -p $spath/mariadb && cd $spath/mariadb
 clean_oldsrc mariadb-$mariadb_version
 download_src "https://downloads.mariadb.org/f/mariadb-$mariadb_version/kvm-tarbake-jaunty-x86/mariadb-$mariadb_version.tar.gz/from/http:/mirror3.layerjet.com/mariadb" mariadb-$mariadb_version.tar.gz
 
 # extract manually
 tar -xzvf mariadb-$mariadb_version.tar.gz
 cd mariadb-$mariadb_version/BUILD && ./autorun.sh
-cd .. && ./configure --prefix=/usr/local/mariadb/$mariadb_version --with-mysqld-user=mysql --with-mysqlmanager --enable-profiling --with-plugins=myisam,archive,blackhole,csv,ibmdb2i,innodb_plugin,aria,myisammrg,xtradb,federated,partition,pbxt
+cd .. && ./configure --prefix=$ipath/mariadb/$mariadb_version --with-mysqld-user=mysql --with-mysqlmanager --enable-profiling --with-plugins=myisam,archive,blackhole,csv,ibmdb2i,innodb_plugin,aria,myisammrg,xtradb,federated,partition,pbxt
 if [ $? -ge 1 ]; then
    echo "configure failed."
    exit 1
@@ -51,8 +54,8 @@ fi
 
 # relink
 /etc/init.d/mysql stop
-rm /usr/local/mariadb/current 
-ln -s /usr/local/mariadb/$mariadb_version /usr/local/mariadb/current
+rm $ipath/mariadb/current 
+ln -s $ipath/mariadb/$mariadb_version $ipath/mariadb/current
 /etc/init.d/mysql start
 
 

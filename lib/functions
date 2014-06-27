@@ -1,6 +1,9 @@
 init () {
   mkdir -p $ipath
   mkdir -p $spath
+  if ! id -u $www_user > /dev/null 2>&1; then
+    useradd -s /usr/sbin/nologin -d /var/www $www_user
+  fi
 }
 
 clean_oldsrc () {

@@ -8,22 +8,25 @@ if [ "x$uversion" == "x" -o "x$ldnsuversion" == "x" ]; then
 	exit 1
 fi
 
-. /usr/local/src/update/lib/functions
+. $(dirname $0)/config.sh
+. $(dirname $0)/lib/functions
 
-mkdir -p /usr/local/src && cd /usr/local/src
+init
+
+cd $spath
 
 clean_oldsrc ldns-$ldnsuversion
 download_src "http://www.nlnetlabs.nl/downloads/ldns/ldns-$ldnsuversion.tar.gz" ldns-$ldnsuversion.tar.gz
-extract_and_compile ldns $ldnsuversion "--prefix=/usr/local/ldns/$ldnsuversion --with-ssl=/usr/local/openssl/current"
+extract_and_compile ldns $ldnsuversion "--prefix=$ipath/ldns/$ldnsuversion --with-ssl=$ipath/openssl/current"
 
 clean_oldsrc unbound-$uversion
 download_src "http://unbound.net/downloads/unbound-$uversion.tar.gz" unbound-$uversion.tar.gz
-extract_and_compile unbound $uversion "--prefix=/usr/local/unbound/$uversion --with-ssl=/usr/local/openssl/current --with-chroot-dir=/var/lib/unbound --disable-gost --with-ldns=/usr/local/ldns/$ldnsuversion"
+extract_and_compile unbound $uversion "--prefix=$ipath/unbound/$uversion --with-ssl=$ipath/openssl/current --with-chroot-dir=/var/lib/unbound --disable-gost --with-ldns=$ipath/ldns/$ldnsuversion"
 
-cd /usr/local/unbound/$uversion/etc
+cd $ipath/unbound/$uversion/etc
 ln -s /etc/unbound/unbound.conf .
 
-cd /usr/local/unbound
+cd $ipath/unbound
 /etc/init.d/unbound stop
 rm -f current
 ln -s $uversion current

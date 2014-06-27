@@ -8,14 +8,17 @@ if [ "x$dovecot_version" == "x" -o "x$pig_version" == "x" ]; then
 	exit 1
 fi
 
-. /usr/local/src/update/lib/functions
+. $(dirname $0)/config.sh
+. $(dirname $0)/lib/functions
 
-mkdir -p /usr/local/src/dovecot && cd /usr/local/src/dovecot
+init
+
+mkdir -p $spath/dovecot && cd $spath/dovecot
 clean_oldsrc dovecot-$dovecot_version
 
 download_src "http://dovecot.org/releases/2.2/dovecot-$dovecot_version.tar.gz" dovecot-$dovecot_version.tar.gz
 
-extract_and_compile dovecot $dovecot_version "--prefix=/usr/local/dovecot/$dovecot_version --with-shadow --with-pam --with-ssl=openssl --with-mysql --sysconfdir=/etc"
+extract_and_compile dovecot $dovecot_version "--prefix=$ipath/dovecot/$dovecot_version --with-shadow --with-pam --with-ssl=openssl --with-mysql --sysconfdir=/etc"
 
 # compile pigeon
 # clean up the source directory
@@ -23,18 +26,18 @@ clean_oldsrc dovecot-2.2-pigeonhole-$pig_version
 
 download_src "http://pigeonhole.dovecot.org/releases/2.2/dovecot-2.2-pigeonhole-$pig_version.tar.gz" dovecot-2.2-pigeonhole-$pig_version.tar.gz
 
-extract_and_compile dovecot-2.2-pigeonhole $pig_version "--with-dovecot=/usr/local/dovecot/$dovecot_version/lib/dovecot"
+extract_and_compile dovecot-2.2-pigeonhole $pig_version "--with-dovecot=$ipath/dovecot/$dovecot_version/lib/dovecot"
 
 # relink dovecot
-cd /usr/local/dovecot/$dovecot_version
+cd $ipath/dovecot/$dovecot_version
 ln -s /etc/dovecot etc
-./bin/doveconf -c /usr/local/dovecot/$dovecot_version/etc/dovecot.conf
+./bin/doveconf -c $ipath/dovecot/$dovecot_version/etc/dovecot.conf
 if [ $? -ne 0 ]; then
   echo "Configuration issues. Don't restart dovecot"
   exit 0
 fi
 
-cd /usr/local/dovecot
+cd $ipath/dovecot
 if [ -f /etc/init.d/dovecot ]; then
   /etc/init.d/dovecot stop
   # dovecot doesn't stop savely

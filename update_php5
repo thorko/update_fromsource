@@ -9,21 +9,26 @@ if [ "x$php_version" == "x" -o "x$apache_version" == "x" ]; then
 	exit 1
 fi
 
+. $(dirname $0)/config.sh
+. $(dirname $0)/lib/functions
+
+init
+
 function update() {
-    mkdir -p /usr/local/src && cd /usr/local/src
+    cd $spath
     wget http://de2.php.net/get/php-$php_version.tar.bz2/from/de1.php.net/mirror -O php-$php_version.tar.bz2
     if [ $? -ge 1 ]; then
       echo "Couldn't download php-$php_version.tar.bz2"
       exit 1
     fi
-    tar -xjvf /usr/local/src/php-$php_version.tar.bz2
+    tar -xjvf $spath/php-$php_version.tar.bz2
     # compile php5
-    cd /usr/local/src/php-$php_version
+    cd $spath/php-$php_version
     # patch php5 to work with recode and imap
     vim -c '%s/^\(.*test.*recode_conflict.*\)/#\1/gc' -c 'wq!' configure
     vim -c '%s/^\(.*test.*recode_conflict.*\)/dnl \1/gc' -c 'wq!' ext/recode/config9.m4
      
-    ./configure  --prefix=/usr/local/php5/$php_version --with-pear --enable-cli --with-mysql --with-mysql-sock --enable-calendar --with-pcre-regex --with-mysqli --with-mcrypt --with-recode --with-gd --with-zlib --with-imap --with-imap-ssl --with-kerberos --enable-bcmath --with-pdo-mysql --with-apxs2=/usr/local/apache2/$apache_version/bin/apxs --with-freetype-dir --enable-gd-native-ttf --with-gettext --enable-dom --enable-sockets --enable-mbstring --enable-intl --with-jpeg-dir=/usr/lib --with-png-dir --enable-zip --with-curl --enable-json --enable-exif --with-libxml-dir=/usr/local/libxml2
+    ./configure  --prefix=$ipath/php5/$php_version --with-pear --enable-cli --with-mysql --with-mysql-sock --enable-calendar --with-pcre-regex --with-mysqli --with-mcrypt --with-recode --with-gd --with-zlib --with-imap --with-imap-ssl --with-kerberos --enable-bcmath --with-pdo-mysql --with-apxs2=$ipath/apache2/$apache_version/bin/apxs --with-freetype-dir --enable-gd-native-ttf --with-gettext --enable-dom --enable-sockets --enable-mbstring --enable-intl --with-jpeg-dir=/usr/lib --with-png-dir --enable-zip --with-curl --enable-json --enable-exif --with-libxml-dir=/usr/local/libxml2
     make
     if [ $? -eq 1 ]; then
     	echo "ERROR make failed..."
@@ -39,16 +44,16 @@ function update() {
     sed -i '/^LoadModule php5_module/d' /etc/apache2/httpd.conf
     
     # relink everything
-    cp libs/libphp5.so /usr/local/php5/$php_version/lib
-    cd /usr/local/php5/$php_version/lib
+    cp libs/libphp5.so $ipath/php5/$php_version/lib
+    cd $ipath/php5/$php_version/lib
     ln -s /etc/php5/apache2/php.ini ./
-    cd /usr/local/php5
+    cd $ipath/php5
     rm -f current && ln -s ./$php_version ./current
     
-    rm -f /usr/local/apache2/$apache_version/modules/libphp5.so
-    ln -s /usr/local/php5/current/lib/libphp5.so /usr/local/apache2/$apache_version/modules/libphp5.so
+    rm -f $ipath/apache2/$apache_version/modules/libphp5.so
+    ln -s $ipath/php5/current/lib/libphp5.so $ipath/apache2/$apache_version/modules/libphp5.so
     
-    if [ ! -f /usr/local/php5/current/lib/php.ini ]; then
+    if [ ! -f $ipath/php5/current/lib/php.ini ]; then
     	echo "NO php.ini linked to current"
     fi
     apachectl -t
@@ -58,13 +63,13 @@ function update() {
     	/etc/init.d/apache2 start
     fi
     # needed for sms sending
-    /usr/local/bin/pear install Log
+    $ipath/bin/pear install Log
     # needed for piwik geo Location
-    /usr/local/bin/pecl install GeoIP
+    $ipath/bin/pecl install GeoIP
 }
 
 function rollback() {
-    cd /usr/local/php5
+    cd $ipath/php5
     rm -f current && ln -s ./$php_version ./current
     apachectl -t
     if [ $? -eq 0 ]; then

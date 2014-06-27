@@ -8,11 +8,16 @@ if [ "x$ms_version" == "x" -o "x$apache_version" == "x" ]; then
 	exit 1
 fi
 
+. $(dirname $0)/config.sh
+. $(dirname $0)/lib/functions
+
+init
+
 # compile modsecurity
-mkdir -p /usr/local/src && cd /usr/local/src
+cd $spath
 tar -xzvf modsecurity-apache_$ms_version.tar.gz
-cd /usr/local/src/modsecurity-apache_$ms_version
-./configure --prefix=/usr/local/modsecurity/$ms_version --with-apxs=/usr/local/apache2/$apache_version/bin/apxs
+cd $spath/modsecurity-apache_$ms_version
+./configure --prefix=$ipath/modsecurity/$ms_version --with-apxs=$ipath/apache2/$apache_version/bin/apxs
 make
 if [ $? -eq 1 ]; then
 	echo "ERROR make failed..."
@@ -31,7 +36,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # relink modsecurity
-cd /usr/local/modsecurity/
+cd $ipath/modsecurity/
 rm -f current
 ln -s $ms_version current
 
