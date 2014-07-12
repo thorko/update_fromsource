@@ -143,15 +143,19 @@ ln -s ./$apache_version current
 
 if [ ! -f $ipath/apache2/$apache_version/modules/mod_security2.so ]; then
 	echo "NO mod_security.so installed"
+  exit 1
 fi
 if [ ! -f $ipath/apache2/$apache_version/modules/libphp5.so ]; then
 	echo "NO libphp5.so installed"
+  exit 1
 fi
 if [ ! -f $ipath/apache2/$apache_version/modules/mod_dav_svn.so ]; then
 	echo "NO mod_dav_svn.so installed"
+  exit 1
 fi
 if [ ! -f $ipath/apache2/$apache_version/modules/mod_authz_svn.so ]; then
 	echo "NO mod_authz_svn.so installed"
+  exit 1
 fi
 
 apachectl -t
