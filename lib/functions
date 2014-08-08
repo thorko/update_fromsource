@@ -1,5 +1,6 @@
 init () {
   version=$1
+  name=${0##*_}
   mkdir -p $ipath
   mkdir -p $spath
   if ! id -u $www_user > /dev/null 2>&1; then
@@ -7,9 +8,9 @@ init () {
   fi
 
   # check if version is already installed
-  if [ -d $ipath/$version ]; then
-	echo "Directory $ipath/$version already exists"
-	exit 1
+  if [ -d $ipath/$name/$version ]; then
+	  echo "Directory $ipath/$name/$version already exists"
+	  exit 1
   fi
 }
 
