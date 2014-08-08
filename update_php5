@@ -12,7 +12,7 @@ fi
 . $(dirname $0)/config.sh
 . $(dirname $0)/lib/functions
 
-init
+init $php_version
 
 function update() {
     cd $spath

@@ -11,7 +11,7 @@ fi
 . $(dirname $0)/config.sh
 . $(dirname $0)/lib/functions
 
-init
+init $dovecot_version
 
 mkdir -p $spath/dovecot && cd $spath/dovecot
 clean_oldsrc dovecot-$dovecot_version

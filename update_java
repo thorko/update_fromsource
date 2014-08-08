@@ -12,7 +12,6 @@ fi
 . $(dirname $0)/config.sh
 . $(dirname $0)/lib/functions
 
-init
 
 # split version
 IFS="u"
@@ -22,6 +21,8 @@ shift
 minorv=$@
 
 IFS=''
+
+init jdk1.$majorv.0_$minorv
 
 # stop all
 if [ "x$restart" != "x" ]; then

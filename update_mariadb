@@ -10,7 +10,7 @@ fi
 . $(dirname $0)/config.sh
 . $(dirname $0)/lib/functions
 
-init
+init $mariadb_version
 
 # make a backup of mysql databases
 function make_backup () {

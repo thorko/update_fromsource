@@ -14,7 +14,7 @@ fi
 . $(dirname $0)/config.sh
 . $(dirname $0)/lib/functions
 
-init
+init $apache_version
 
 # clean up all old directories
 rm -rf $spath/httpd-$apache_version?(.tar.gz)

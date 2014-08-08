@@ -1,8 +1,15 @@
 init () {
+  version=$1
   mkdir -p $ipath
   mkdir -p $spath
   if ! id -u $www_user > /dev/null 2>&1; then
     useradd -s /usr/sbin/nologin -d /var/www $www_user
+  fi
+
+  # check if version is already installed
+  if [ -d $ipath/$version ]; then
+	echo "Directory $ipath/$version already exists"
+	exit 1
   fi
 }
 

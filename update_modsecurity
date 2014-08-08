@@ -11,7 +11,7 @@ fi
 . $(dirname $0)/config.sh
 . $(dirname $0)/lib/functions
 
-init
+init $ms_version
 
 # compile modsecurity
 cd $spath
