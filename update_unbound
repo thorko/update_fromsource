@@ -1,10 +1,9 @@
 #!/bin/bash
 
 uversion=$1
-ldnsuversion=$2
 
-if [ "x$uversion" == "x" -o "x$ldnsuversion" == "x" ]; then
-	echo "Usage: $0 <version> <ldns uversion>"
+if [ "x$uversion" == "x" ]; then
+	echo "Usage: $0 <version>"
 	exit 1
 fi
 
@@ -15,13 +14,9 @@ init $uversion
 
 cd $spath
 
-clean_oldsrc ldns-$ldnsuversion
-download_src "http://www.nlnetlabs.nl/downloads/ldns/ldns-$ldnsuversion.tar.gz" ldns-$ldnsuversion.tar.gz
-extract_and_compile ldns $ldnsuversion "--prefix=$ipath/ldns/$ldnsuversion --with-ssl=$ipath/openssl/current"
-
 clean_oldsrc unbound-$uversion
 download_src "http://unbound.net/downloads/unbound-$uversion.tar.gz" unbound-$uversion.tar.gz
-extract_and_compile unbound $uversion "--prefix=$ipath/unbound/$uversion --with-ssl=$ipath/openssl/current --with-chroot-dir=/var/lib/unbound --disable-gost --with-ldns=$ipath/ldns/$ldnsuversion"
+extract_and_compile unbound $uversion "--prefix=$ipath/unbound/$uversion --with-ssl=$ipath/openssl/current --with-chroot-dir=/var/lib/unbound --disable-gost"
 
 cd $ipath/unbound/$uversion/etc
 ln -s /etc/unbound/unbound.conf .
