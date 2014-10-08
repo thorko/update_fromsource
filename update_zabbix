@@ -31,6 +31,8 @@ cp -R frontends/php $destdir/frontends
 rm -f $destdir/etc/zabbix_agentd.conf $destdir/etc/zabbix_server.conf
 ln -s /etc/zabbix/zabbix_agentd.conf $destdir/etc/
 ln -s /etc/zabbix/zabbix_server.conf $destdir/etc/
+# copy old config
+cp $ipath/zabbix/current/frontends/conf/zabbix.conf.php $ipath/zabbix/$version/frontends/conf/
 
 # restart zabbix
 /etc/init.d/zabbix-server stop
