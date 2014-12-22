@@ -25,7 +25,7 @@ function make_backup () {
 
 mkdir -p $spath/mariadb && cd $spath/mariadb
 clean_oldsrc mariadb-$mariadb_version
-download_src "https://downloads.mariadb.org/interstitial/mariadb-5.5.39/source/mariadb-$mariadb_version.tar.gz/from/http://nyc2.mirrors.digitalocean.com/mariadb" mariadb-$mariadb_version.tar.gz
+download_src "https://downloads.mariadb.org/f/mariadb-$mariadb_version/source/mariadb-$mariadb_version.tar.gz/from/http%3A/mirror.netcologne.de/mariadb?serve" mariadb-$mariadb_version.tar.gz
 
 # extract manually
 tar -xzvf mariadb-$mariadb_version.tar.gz
