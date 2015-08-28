@@ -12,7 +12,9 @@ fi
 . $(dirname $0)/config.sh
 . $(dirname $0)/lib/functions
 
-init $php_version
+if [ "$mode" != "rollback" ]; then 
+    init $php_version
+fi
 
 function update() {
     cd $spath
@@ -80,7 +82,7 @@ function rollback() {
 }
 
 
-case "$3" in
+case "$mode" in
     update) update;;
     rollback) rollback;;
     *) echo "usage: $0 <php version> <apache version> <update|rollback>";;
