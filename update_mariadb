@@ -53,9 +53,10 @@ if [ $? == 0 ]; then
 fi
 
 # relink
-/etc/init.d/mysql stop
+systemctl=$(which systemctl)
+$systemctl stop mysql
 rm $ipath/mariadb/current 
 ln -s $ipath/mariadb/$mariadb_version $ipath/mariadb/current
-/etc/init.d/mysql start
+$systemctl start mysql
 
 
