@@ -35,13 +35,14 @@ ln -s /etc/zabbix/zabbix_server.conf $destdir/etc/
 cp $ipath/zabbix/current/frontends/conf/zabbix.conf.php $ipath/zabbix/$version/frontends/conf/
 
 # restart zabbix
-/etc/init.d/zabbix-server stop
-/etc/init.d/zabbix-agent stop
+systemctl=$(which systemctl)
+$systemctl stop zabbix-server
+$systemctl stop zabbix-agent
 sleep 3
 rm -f $ipath/zabbix/current && ln -s $destdir $ipath/zabbix/current
-/etc/init.d/zabbix-server start
+$systemctl start zabbix-server
 sleep 3
-/etc/init.d/zabbix-agent start
+$systemmctl start zabbix-agent
 
 # change ownership of frontend
 chown -R $www_user: $ipath/zabbix/current/frontends
