@@ -1,0 +1,40 @@
+#!/bin/bash
+
+version=$1
+
+if [ "x$version" == "x" ]; then
+  echo "Usage: $0 <version>"
+  exit 1
+fi
+
+. $(dirname $0)/config.sh
+. $(dirname $0)/lib/functions
+
+init $version
+
+cd $spath
+clean_oldsrc clamav-$version
+
+download_src "https://www.clamav.net/downloads/production/clamav-$version.tar.gz" clamav-$version.tar.gz
+tar -xvzf clamav-$version.tar.gz
+cd clamav-$version
+./configure --prefix=/usr/local/clamav/$version --enable-ipv6 --with-openssl=/usr/local/openssl/current --enable-clamdtop
+if [ $? -eq 1 ]; then
+  echo "ERROR configure failed..."
+	exit 1
+fi
+make
+if [ $? -eq 1 ]; then
+  echo "ERROR make failed..."
+	exit 1
+fi
+make install
+if [ $? -eq 1 ]; then
+  echo "ERROR make install failed..."
+	exit 1
+fi
+
+cd $ipath/clamav
+rm -f current
+ln -s $version current
+
