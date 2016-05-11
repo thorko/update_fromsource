@@ -45,7 +45,7 @@ if [ -f /etc/init.d/dovecot ]; then
 else
   systemctl=$(which systemctl)
   $systemctl stop dovecot
-  pkill -9 -f dovecot
+  pkill -9 -f "sbin/dovecot"
 fi
 rm -f current
 ln -s $dovecot_version current
