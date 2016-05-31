@@ -60,9 +60,9 @@ function update() {
     fi
     apachectl -t
     if [ $? -eq 0 ]; then
-    	/etc/init.d/apache2 stop
+    	/bin/systemctl stop apache2
     	sleep 4
-    	/etc/init.d/apache2 start
+    	/bin/systemctl start apache2
     fi
     # needed for sms sending
     $ipath/bin/pear install Log
@@ -75,9 +75,9 @@ function rollback() {
     rm -f current && ln -s ./$php_version ./current
     apachectl -t
     if [ $? -eq 0 ]; then
-    	/etc/init.d/apache2 stop
+    	/bin/systemctl stop apache2
     	sleep 2
-    	/etc/init.d/apache2 start
+    	/bin/systemctl start apache2
     fi
 }
 
