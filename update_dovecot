@@ -38,20 +38,9 @@ if [ $? -ne 0 ]; then
 fi
 
 cd $ipath/dovecot
-if [ -f /etc/init.d/dovecot ]; then
-  /etc/init.d/dovecot stop
-  # dovecot doesn't stop savely
-  pkill -9 -f dovecot
-else
-  systemctl=$(which systemctl)
-  $systemctl stop dovecot
-  pkill -9 -f "sbin/dovecot"
-fi
+init_script dovecot stop
+# dovecot doesn't stop savely
+pkill -9 -f dovecot
 rm -f current
 ln -s $dovecot_version current
-if [ -f /etc/init.d/dovecot ]; then
-  /etc/init.d/dovecot start
-else
-  systemctl=$(which systemctl)
-  $systemctl start dovecot
-fi
+init_script dovecot start
