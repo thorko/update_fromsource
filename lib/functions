@@ -95,3 +95,15 @@ Hit [Enter] to continue or [CTRL-C] to break '
 	
 }
 
+init_script() {
+  process=$1
+  action=$2
+
+  systemctl=$(which systemctl)
+
+  if [ "x$systemctl" == "x" ]; then
+      /etc/init.d/$process $action
+  else
+      $systemctl $action $process
+  fi
+}
