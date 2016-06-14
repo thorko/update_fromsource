@@ -1,0 +1,37 @@
+#!/bin/bash
+
+postfix_version=$1
+
+if [ "x$postfix_version" == "x" ]; then
+	echo "Usage: $0 <postfix version>"
+	exit 1
+fi
+
+. $(dirname $0)/config.sh
+. $(dirname $0)/lib/functions
+
+init $postfix_version
+
+mkdir -p $spath/postfix && cd $spath/postfix
+clean_oldsrc postfix-$postfix_version
+
+download_src "http://postfix.org/releases/2.2/postfix-$postfix_version.tar.gz" postfix-$postfix_version.tar.gz
+
+tp="$ipath/$postfix_version"
+extract_and_compile postfix $postfix_version "--prefix=$ipath/postfix/$postfix_version --with-shadow --with-pam --with-ssl=openssl --with-mysql --sysconfdir=/etc"
+
+make -f Makefile.init makefiles CCARGS='-DHAS_MYSQL -I/usr/local/mariadb/current/include/mysql -DUSE_SSL -I/usr/local/openssl/current/include/openssl -DUSE_TLS -DUSE_SASL_AUTH -DDEF_CONFIG_DIR=\"'$tp'/etc\" -DDEF_DATA_DIR=\"/var/lib/postfix\" -DDEF_COMMAND_DIR=\"'$tp'/sbin\" -DDEF_QUEUE_DIR=\"/var/spool/postfix\" -DDEF_DAEMON_DIR=\"'$tp'/libexec\"' AUXLIBS='-L/usr/lib -L/usr/local/openssl/current/lib -lmysqlclient -lz -lm -lssl -lcrypto'
+
+# relink postfix
+cd $ipath/postfix/$postfix_version
+ln -s /etc/postfix etc
+if [ $? -ne 0 ]; then
+  echo "Configuration issues. Don't restart postfix"
+  exit 0
+fi
+
+cd $ipath/postfix
+init_script postfix stop
+rm -f current
+ln -s $postfix_version current
+init_script postfix start
