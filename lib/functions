@@ -33,6 +33,26 @@ download_src () {
 	fi
 }
 
+extract() {
+  name=$1
+	version=$2
+	source=$(ls -1 $name-$version.t*)
+	perl -e "'$source' =~ /(tar.gz|tgz)/ || exit 1"
+	if [ $? -eq 0 ]; then
+		extract="tar -xzvf"
+	else 
+		extract="tar -xjvf"
+	fi
+
+	$extract $source
+	if [ $? -ge 1 ]; then
+		echo "extracting source $source failed."
+		exit 1
+	fi
+
+	cd $name-$version
+}
+
 extract_and_compile() {
 	name=$1
 	version=$2
