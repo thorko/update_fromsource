@@ -15,7 +15,7 @@ init $mariadb_version
 # make a backup of mysql databases
 function make_backup () {
 	echo -en "Will make a backup of you database...."
-  /opt/scripts/backup/mysql_backup.sh
+  /opt/scripts/bash/trunk/mysql_backup.sh
 	if [ $? -eq 1 ]; then
 		echo "ERROR mysql_backup failed..."
 		exit 1
@@ -49,7 +49,7 @@ fi
 
 pgrep mysql > /dev/null 2>&1
 if [ $? == 0 ]; then
-	/opt/scripts/backup/mysql_backup.sh
+  make_backup
 fi
 
 # relink
