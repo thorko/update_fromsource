@@ -68,6 +68,8 @@ function update() {
     $ipath/bin/pear install Log
     # needed for piwik geo Location
     $ipath/bin/pecl install GeoIP
+    # run libtool
+    $spath/php-$php_version/libtool --finish $spath/php-$php_version/libs
 }
 
 function rollback() {
