@@ -30,7 +30,7 @@ function update() {
     sed -i 's/^\(\s*test.*recode_conflict.*\)/#\1/g' configure
     sed -i 's/^\(\s*test.*recode_conflict.*\)/dnl \1/g' ext/recode/config9.m4
      
-    ./configure  --prefix=$ipath/php5/$php_version --with-pear --enable-cli --with-mysql --with-mysql-sock --enable-calendar --with-pcre-regex --with-mysqli --with-mcrypt --with-recode --with-gd --with-zlib --with-imap --with-imap-ssl --with-kerberos --enable-bcmath --with-pdo-mysql --with-apxs2=$ipath/apache2/$apache_version/bin/apxs --with-freetype-dir --enable-gd-native-ttf --with-gettext --enable-dom --enable-sockets --enable-mbstring --enable-intl --with-jpeg-dir=/usr/lib --with-png-dir --enable-zip --with-curl --enable-json --enable-exif --with-libxml-dir=/usr/local/libxml2 --with-openssl --enable-opcache --with-openssl-dir=/usr/local/openssl/current
+    ./configure  --prefix=$ipath/php5/$php_version --with-pear --enable-cli --with-mysql --with-mysql-sock --enable-calendar --with-pcre-regex --with-mysqli --with-mcrypt --with-recode --with-gd --with-zlib --with-imap --with-imap-ssl --with-kerberos --enable-bcmath --with-pdo-mysql --with-apxs2=$ipath/apache2/$apache_version/bin/apxs --with-freetype-dir --enable-gd-native-ttf --with-gettext --enable-dom --enable-sockets --enable-mbstring --enable-intl --with-jpeg-dir=/usr/lib --with-png-dir --enable-zip --with-curl --enable-json --enable-exif --with-libxml-dir=/usr/local/libxml2 --with-openssl --enable-opcache --with-openssl-dir=/usr/local/openssl/current --enable-pcntl
     make
     if [ $? -eq 1 ]; then
     	echo "ERROR make failed..."
