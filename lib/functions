@@ -1,5 +1,6 @@
 init () {
   version=$1
+  force=${2:-noforce}
   name=${0##*_}
   mkdir -p $ipath
   mkdir -p $spath
@@ -8,7 +9,7 @@ init () {
   fi
 
   # check if version is already installed
-  if [ -d $ipath/$name/$version ]; then
+  if [ -d $ipath/$name/$version -a "x$force" == "xnoforce" ]; then
 	  echo "Directory $ipath/$name/$version already exists"
 	  exit 1
   fi

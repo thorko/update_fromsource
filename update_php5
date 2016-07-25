@@ -13,7 +13,7 @@ fi
 . $(dirname $0)/lib/functions
 
 if [ "$mode" != "rollback" ]; then 
-    init $php_version
+    init $php_version $4
 fi
 
 function update() {
