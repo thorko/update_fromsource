@@ -19,7 +19,7 @@ init $apache_version
 # clean up all old directories
 rm -rf $spath/httpd-$apache_version?(.tar.gz)
 rm -rf $spath/php-$php_version?(.tar.bz2)
-rm -rf $spath/subversion-$svn_version?(.tar.gz)
+#rm -rf $spath/subversion-$svn_version?(.tar.gz)
 rm -rf $spath/modsecurity-apache-$mod_sec_version?(.tar.gz)
 
 # compile apache
@@ -80,11 +80,11 @@ ln -s $ipath/php5/$php_version $ipath/php5/current
 
 # compile subversion for mod_dav_svn
 cd $spath
-wget http://apache.mirror.digionline.de/subversion/subversion-$svn_version.tar.gz -O $spath/subversion-$svn_version.tar.gz
-if [ $? -ge 1 ]; then
-  echo "Couldn't download subversion-$svn_version.tar.gz"
-  exit 1
-fi
+#wget http://apache.mirror.digionline.de/subversion/subversion-$svn_version.tar.gz -O $spath/subversion-$svn_version.tar.gz
+#if [ $? -ge 1 ]; then
+#  echo "Couldn't download subversion-$svn_version.tar.gz"
+#  exit 1
+#fi
 tar -xzvf $spath/subversion-$svn_version.tar.gz
 cd $spath/subversion-$svn_version
 ./configure --with-apxs=$ipath/apache2/$apache_version/bin/apxs
