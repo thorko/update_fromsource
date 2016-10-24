@@ -1,10 +1,10 @@
 #!/bin/bash
 
 php_version=$1
-apache_version=$2
-mode=$3
+mode=$2
 
-if [ "x$php_version" == "x" -o "x$apache_version" == "x" ]; then
+apache_version=$(file /usr/local/apache2/current |awk '{ print $5}'|perl -pe 's/.*(\d+\.\d+\.\d+)/$1/')
+if [ "x$php_version" == "x" ]; then
 	echo "Usage: $0 <php version> <apache version> <update|rollback>"
 	exit 1
 fi
@@ -87,5 +87,5 @@ function rollback() {
 case "$mode" in
     update) update;;
     rollback) rollback;;
-    *) echo "usage: $0 <php version> <apache version> <update|rollback>";;
+    *) echo "usage: $0 <php version> <update|rollback>";;
 esac
