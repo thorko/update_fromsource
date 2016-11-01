@@ -31,7 +31,7 @@ if [ $? -ge 1 ]; then
 fi
 tar -xzvf httpd-$apache_version.tar.gz
 cd $spath/httpd-$apache_version
-CPPFLAGS="-DOPENSSL_NO_SSL2" ./configure --prefix=$ipath/apache2/$apache_version --enable-mods-shared="headers authz_svn auth_basic authn_file alias dav_lock dav_fs dav dav_svn cache disk_cache mem_cache ssl cgi rewrite unique_id" --enable-auth-digest --enable-substitute --enable-info --enable-vhost-alias --enable-status --enable-autoindex --enable-log-forensic --with-unique-id --enable-so --enable-deflate --enable-dav --enable-unixd --with-ssl=$ipath/openssl/current
+CPPFLAGS="-DOPENSSL_NO_SSL2" ./configure --prefix=$ipath/apache2/$apache_version --enable-mods-shared="headers authz_svn auth_basic authn_file alias dav_lock dav_fs dav dav_svn cache disk_cache mem_cache ssl cgi rewrite unique_id" --enable-auth-digest --enable-substitute --enable-info --enable-vhost-alias --enable-status --enable-autoindex --enable-log-forensic --with-unique-id --enable-so --enable-deflate --enable-dav --enable-unixd --with-ssl=$ipath/openssl/current --enable-http2
 if [ $? -eq 1 ]; then
 	echo "configure apache2 failed..."
 	exit 1
