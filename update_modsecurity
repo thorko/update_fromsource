@@ -12,11 +12,14 @@ fi
 . $(dirname $0)/lib/functions
 
 init $ms_version
-
 # compile modsecurity
 cd $spath
-tar -xzvf modsecurity-apache_$ms_version.tar.gz
-cd $spath/modsecurity-apache_$ms_version
+#### remove old source
+rm -f $spath/modsecurity-$ms_version.tar.gz
+rm -f $spath/modsecurity-$ms_version
+wget https://www.modsecurity.org/tarball/$ms_version/modsecurity-$ms_version.tar.gz -O $spath/modsecurity-$ms_version.tar.gz
+tar -xzvf modsecurity-$ms_version.tar.gz
+cd $spath/modsecurity-$ms_version
 ./configure --prefix=$ipath/modsecurity/$ms_version --with-apxs=$ipath/apache2/$apache_version/bin/apxs
 make
 if [ $? -eq 1 ]; then
