@@ -105,27 +105,10 @@ fi
 
 # compile mod_security
 cd $spath
-wget https://www.modsecurity.org/tarball/$mod_sec_version/modsecurity-apache_$mod_sec_version.tar.gz -O $spath/modsecurity-apache_$mod_sec_version.tar.gz
-if [ $? -ge 1 ]; then
-  echo "Couldn't download modsecurity-apache_$mod_sec_version.tar.gz"
+$spath/update/update_modsecurity $mod_sec_version $apache_version
+if [ $? -gt 0 ]; then
+  echo "ERROR failed to install modsecurity..."
   exit 1
-fi
-tar -xzvf $spath/modsecurity-apache_$mod_sec_version.tar.gz 
-cd $spath/modsecurity-apache_$mod_sec_version
-./configure --with-apxs=$ipath/apache2/$apache_version/bin/apxs
-if [ $? -eq 1 ]; then
-	echo "configure modsecurity failed..."
-	exit 1
-fi
-make
-if [ $? -eq 1 ]; then
-	echo "ERROR make mod_security failed..."
-	exit 1
-fi
-make install
-if [ $? -eq 1 ]; then
-	echo "ERROR make install mod_security failed..."
-	exit 1
 fi
 
 # copy modules
