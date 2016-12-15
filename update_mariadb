@@ -47,6 +47,10 @@ if [ $? -ge 1 ]; then
   exit 1
 fi
 
+if [ ! -L $ipath/mariadb/current ]; then
+    ln -s $ipath/mariadb/$mariadb_version $ipath/mariadb/current
+fi
+
 pgrep mysql > /dev/null 2>&1
 if [ $? == 0 ]; then
   make_backup

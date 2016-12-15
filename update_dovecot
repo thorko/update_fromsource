@@ -28,6 +28,10 @@ download_src "http://pigeonhole.dovecot.org/releases/2.2/dovecot-2.2-pigeonhole-
 
 extract_and_compile dovecot-2.2-pigeonhole $pig_version "--with-dovecot=$ipath/dovecot/$dovecot_version/lib/dovecot"
 
+if [ ! -L $ipath/dovecot/current ]; then
+  ln -s $ipath/dovecot/$dovecot_version $ipath/dovecot/current
+fi
+
 # relink dovecot
 cd $ipath/dovecot/$dovecot_version
 ln -s /etc/dovecot etc
